@@ -1,7 +1,28 @@
 import Link from 'next/link'
-import { getUser } from '@/app/lib/actions'
+import { db } from '@/app/lib/db.server'
+import { invariantResponse } from '@/app/lib/misc'
 
-export default async function Page(props: { params: { username: string } }) {
+type Props = { params: { username: string } }
+
+async function getUser(props: Props) {
+	const { params } = props
+
+	const user = db.user.findFirst({
+		where: {
+			username: {
+				equals: params.username,
+			},
+		},
+	})
+
+	invariantResponse(user, 'User not found', { status: 404 })
+
+	return {
+		user: { name: user.name, username: user.username },
+	}
+}
+
+export default async function Page(props: Props) {
 	const data = await getUser(props)
 
 	return (
