@@ -1,3 +1,5 @@
+'use server'
+
 import { db } from './db.server'
 import { invariantResponse } from './misc'
 
