@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from 'react'
-import Link from '@/app/comps/custom-link'
+import Link from 'next/link'
+import ActiveLink from '@/app/comps/ui/active-link'
 import { db } from '@/app/lib/db.server'
 import { invariantResponse } from '@/app/lib/misc'
 
@@ -51,14 +52,14 @@ export default async function NotesLayout(props: PropsWithChildren<Props>) {
 						<ul className="overflow-y-auto overflow-x-hidden pb-12">
 							{data.notes.map(note => (
 								<li key={note.id} className="p-1 pr-0">
-									<Link
+									<ActiveLink
 										href={`/users/${ownerDisplayName.toLowerCase()}/notes/${
 											note.id
 										}`}
 										className={navLinkDefaultClassName}
 									>
 										{note.title}
-									</Link>
+									</ActiveLink>
 								</li>
 							))}
 						</ul>
