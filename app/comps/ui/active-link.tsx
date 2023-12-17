@@ -1,4 +1,5 @@
 'use client'
+
 import type { ReactNode } from 'react'
 import NextLink, { LinkProps as NextLinkProps } from 'next/link'
 import { usePathname } from 'next/navigation'
