@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import Link from '@/app/comps/ui/active-link'
+import Link from 'next/link'
 import { db } from '@/app/lib/db.server'
 import { invariantResponse } from '@/app/lib/misc'
 import { Button } from '@/app/comps/ui/button'
@@ -28,8 +28,6 @@ export async function loader({ params }: Props) {
 export default async function NoteRoute(props: Props) {
 	const data = await loader(props)
 
-	console.log('props', props)
-
 	return (
 		<div className="absolute inset-0 flex flex-col px-10">
 			<h2 className="mb-2 pt-12 text-h2 lg:mb-6">{data.note.title}</h2>
@@ -50,7 +48,11 @@ export default async function NoteRoute(props: Props) {
 					</Button>
 				</form>
 				<Button asChild>
-					<Link href={`/edit}`}>Edit</Link>
+					<Link
+						href={`/users/${props.params.username}/notes/${props.params.id}/edit`}
+					>
+						Edit
+					</Link>
 				</Button>
 			</div>
 		</div>
