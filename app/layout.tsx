@@ -4,10 +4,11 @@ import type { Metadata } from 'next'
 import os from 'node:os'
 import Link from 'next/link'
 import { Nunito_Sans } from 'next/font/google'
+import { cn } from './lib/misc'
 
 import './globals.css'
 
-export const nunito = Nunito_Sans({
+const nunito = Nunito_Sans({
 	weight: ['400', '700'],
 	style: ['normal', 'italic'],
 	subsets: ['latin'],
@@ -27,7 +28,10 @@ export default async function RootLayout({
 	const data = await loader()
 
 	return (
-		<html lang="en" className={'h-full overflow-x-hidden'}>
+		<html
+			lang="en"
+			className={cn('h-full overflow-x-hidden', nunito.className)}
+		>
 			<head>
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width,initial-scale=1" />

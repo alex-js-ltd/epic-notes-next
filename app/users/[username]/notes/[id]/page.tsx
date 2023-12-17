@@ -6,7 +6,7 @@ import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
 
 type Props = { params: { id: string; username: string } }
 
-export async function loader({ params }: Props) {
+async function loader({ params }: Props) {
 	'use server'
 
 	const note = db.note.findFirst({

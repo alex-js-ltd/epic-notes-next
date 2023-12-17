@@ -5,7 +5,7 @@ import { invariantResponse } from '@/app/lib/misc'
 
 type Props = { params: { id: string; username: string } }
 
-export async function loader({ params }: Props) {
+async function loader({ params }: Props) {
 	'use server'
 
 	const note = db.note.findFirst({
