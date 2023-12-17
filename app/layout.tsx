@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { Metadata } from 'next'
 
 import os from 'node:os'
@@ -14,13 +15,14 @@ export const nunito = Nunito_Sans({
 })
 
 async function loader() {
+	'use server'
 	return { username: os.userInfo().username }
 }
 
 export default async function RootLayout({
 	children,
 }: {
-	children: React.ReactNode
+	children: ReactNode
 }) {
 	const data = await loader()
 

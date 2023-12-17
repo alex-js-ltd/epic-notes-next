@@ -4,7 +4,8 @@ import { invariantResponse } from '@/app/lib/misc'
 
 type Props = { params: { username: string } }
 
-async function getUser(props: Props) {
+async function loadUser(props: Props) {
+	'use server'
 	const { params } = props
 
 	const user = db.user.findFirst({
@@ -23,7 +24,7 @@ async function getUser(props: Props) {
 }
 
 export default async function Page(props: Props) {
-	const data = await getUser(props)
+	const data = await loadUser(props)
 
 	return (
 		<div className="container mb-48 mt-36">
