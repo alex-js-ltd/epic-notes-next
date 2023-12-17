@@ -39,7 +39,7 @@ export default async function RootLayout({
 							<div className="font-light">epic</div>
 							<div className="font-bold">notes</div>
 						</Link>
-						<Link className="underline" href="users/kody/notes/d27a197e">
+						<Link className="underline" href="/users/kody/notes/d27a197e">
 							Kody's Notes
 						</Link>
 					</nav>

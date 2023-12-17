@@ -15,7 +15,12 @@ export default function CustomLink({ className, ...props }: CustomLinkProps) {
 	return (
 		<NextLink
 			{...props}
-			className={cn(className, pathname === props.href && 'bg-accent')}
+			className={cn(
+				className,
+				typeof props.href === 'string' &&
+					pathname.includes(props.href) &&
+					'bg-accent',
+			)}
 		/>
 	)
 }
