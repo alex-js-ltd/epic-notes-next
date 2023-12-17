@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/app/comps/link'
 import { db } from '@/app/lib/db.server'
 import { invariantResponse } from '@/app/lib/misc'
 

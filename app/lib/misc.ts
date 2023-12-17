@@ -1,3 +1,6 @@
+import { type ClassValue, clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
 /**
  * Provide a condition and if that condition is falsey, this throws a 400
  * Response with the given message.
@@ -27,4 +30,12 @@ export function invariantResponse(
 			{ status: 400, ...responseInit },
 		)
 	}
+}
+
+/**
+ * A handy utility that makes constructing class names easier.
+ * It also merges tailwind classes.
+ */
+export function cn(...inputs: ClassValue[]) {
+	return twMerge(clsx(inputs))
 }
