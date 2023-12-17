@@ -9,11 +9,7 @@ interface CustomLinkProps extends NextLinkProps {
 	children: ReactNode
 }
 
-export default function CustomLink({
-	children,
-	className,
-	...props
-}: CustomLinkProps) {
+export default function CustomLink({ className, ...props }: CustomLinkProps) {
 	const pathname = usePathname()
 
 	const navLinkDefaultClassName =
