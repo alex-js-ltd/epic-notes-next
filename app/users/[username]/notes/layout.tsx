@@ -38,7 +38,6 @@ export default async function NotesLayout(props: PropsWithChildren<Props>) {
 	const navLinkDefaultClassName =
 		'line-clamp-2 block rounded-l-full py-2 pl-8 pr-6 text-base lg:text-xl'
 
-	console.log(ownerDisplayName)
 	return (
 		<main className="container flex h-full min-h-[400px] pb-12 px-0 md:px-8">
 			<div className="grid w-full grid-cols-4 bg-muted pl-2 md:container md:mx-2 md:rounded-3xl md:pr-0">
