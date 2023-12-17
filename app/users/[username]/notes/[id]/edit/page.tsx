@@ -47,16 +47,12 @@ export default async function NoteEdit(props: Props) {
 				</div>
 			</div>
 			<div className={floatingToolbarClassName}>
-				{/* <Button variant="destructive" type="reset">
+				<Button variant="destructive" type="reset">
 					Reset
-				</Button> */}
-				{/* <StatusButton
-					type="submit"
-					disabled={isSubmitting}
-					status={isSubmitting ? 'pending' : 'idle'}
-				>
+				</Button>
+				<StatusButton type="submit" disabled={false} status={'idle'}>
 					Submit
-				</StatusButton> */}
+				</StatusButton>
 			</div>
 		</form>
 	)
