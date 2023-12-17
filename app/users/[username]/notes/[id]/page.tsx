@@ -9,6 +9,8 @@ type Props = { params: { id: string } }
 export async function loader({ params }: Props) {
 	'use server'
 
+	console.log(params)
+
 	const note = db.note.findFirst({
 		where: {
 			id: {
