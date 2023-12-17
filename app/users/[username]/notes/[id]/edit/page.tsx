@@ -1,5 +1,3 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
 import { db } from '@/app/lib/db.server'
 import { invariantResponse } from '@/app/lib/misc'
 import { Button } from '@/app/comps/ui/button'
