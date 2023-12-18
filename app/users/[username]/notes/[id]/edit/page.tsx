@@ -72,7 +72,7 @@ export default async function NoteEdit(props: Props) {
 				<Button variant="destructive" type="reset">
 					Reset
 				</Button>
-				<StatusButton type="submit" disabled={false} status={'idle'}>
+				<StatusButton type="submit" disabled={false}>
 					Submit
 				</StatusButton>
 			</div>
