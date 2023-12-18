@@ -6,6 +6,7 @@ import { Label } from '@/app/comps/ui/label'
 import { Input } from '@/app/comps/ui/input'
 import { Textarea } from '@/app/comps/ui/textarea'
 import { StatusButton } from '@/app/comps/ui/status-button'
+import { revalidatePath } from 'next/cache'
 
 type Props = { params: { id: string; username: string } }
 
@@ -26,12 +27,34 @@ async function loader({ params }: Props) {
 	}
 }
 
+async function action(props: Props, formData: FormData) {
+	'use server'
+
+	const title = formData.get('title')
+	const content = formData.get('content')
+
+	invariantResponse(typeof title === 'string', 'title must be a string')
+	invariantResponse(typeof content === 'string', 'content must be a string')
+
+	db.note.update({
+		where: { id: { equals: props.params.id } },
+		data: { title, content },
+	})
+
+	revalidatePath(
+		`/users/${props.params.username}/notes/${props.params.id}/edit`,
+	)
+}
+
 export default async function NoteEdit(props: Props) {
 	const data = await loader(props)
+
+	const updateNoteWithId = action.bind(null, props)
 	return (
 		<form
 			method="POST"
 			className="flex h-full flex-col gap-y-4 overflow-x-hidden px-10 pb-28 pt-12"
+			action={updateNoteWithId}
 		>
 			<div className="flex flex-col gap-1">
 				<div>
