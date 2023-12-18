@@ -6,8 +6,9 @@ import { invariantResponse } from '@/app/lib/misc'
 
 type Props = { params: { username: string } }
 
-async function loader({ params }: Props) {
+async function loadOwner({ params }: Props) {
 	'use server'
+
 	const owner = db.user.findFirst({
 		where: {
 			username: {
@@ -17,6 +18,12 @@ async function loader({ params }: Props) {
 	})
 
 	invariantResponse(owner, 'Owner not found', { status: 404 })
+
+	return { owner }
+}
+
+async function loadNotes({ params }: Props) {
+	'use server'
 
 	const notes = db.note
 		.findMany({
@@ -29,13 +36,19 @@ async function loader({ params }: Props) {
 			},
 		})
 		.map(({ id, title }) => ({ id, title }))
-	return { owner, notes }
+
+	invariantResponse(notes, 'Notes not found', { status: 404 })
+
+	return { notes }
 }
 
 export default async function NotesLayout(props: PropsWithChildren<Props>) {
-	const data = await loader(props)
+	const ownerPromise = loadOwner(props)
+	const notesPromise = loadNotes(props)
 
-	const ownerDisplayName = data.owner.name ?? data.owner.username
+	const [ownerData, notesData] = await Promise.all([ownerPromise, notesPromise])
+
+	const ownerDisplayName = ownerData.owner.name ?? ownerData.owner.username
 	const navLinkDefaultClassName =
 		'line-clamp-2 block rounded-l-full py-2 pl-8 pr-6 text-base lg:text-xl'
 
@@ -50,7 +63,7 @@ export default async function NotesLayout(props: PropsWithChildren<Props>) {
 							</h1>
 						</Link>
 						<ul className="overflow-y-auto overflow-x-hidden pb-12">
-							{data.notes.map(note => (
+							{notesData.notes.map(note => (
 								<li key={note.id} className="p-1 pr-0">
 									<ActiveLink
 										href={`/users/${ownerDisplayName.toLowerCase()}/notes/${
