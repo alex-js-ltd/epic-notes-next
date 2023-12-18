@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { db } from '@/app/lib/db.server'
 import { invariantResponse } from '@/app/lib/misc'
 import { Button } from '@/app/comps/ui/button'
@@ -24,8 +25,22 @@ async function loader({ params }: Props) {
 	}
 }
 
+async function action(props: Props, formData: FormData) {
+	'use server'
+
+	const intent = formData.get('intent')
+
+	invariantResponse(intent === 'delete', 'Invalid intent')
+
+	db.note.delete({ where: { id: { equals: props.params.id } } })
+
+	redirect(`/users/${props.params.username}/notes`)
+}
+
 export default async function NoteRoute(props: Props) {
 	const data = await loader(props)
+
+	const deleteNoteWithId = action.bind(null, props)
 
 	return (
 		<div className="absolute inset-0 flex flex-col px-10">
@@ -36,7 +51,7 @@ export default async function NoteRoute(props: Props) {
 				</p>
 			</div>
 			<div className={floatingToolbarClassName}>
-				<form method="POST">
+				<form method="POST" action={deleteNoteWithId}>
 					<Button
 						type="submit"
 						variant="destructive"

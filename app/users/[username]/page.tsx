@@ -6,12 +6,11 @@ type Props = { params: { username: string } }
 
 async function loadUser(props: Props) {
 	'use server'
-	const { params } = props
 
 	const user = db.user.findFirst({
 		where: {
 			username: {
-				equals: params.username,
+				equals: props.params.username,
 			},
 		},
 	})
