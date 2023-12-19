@@ -4,13 +4,13 @@ import { invariantResponse } from '@/app/lib/misc'
 
 type Props = { params: { username: string } }
 
-async function loadUser(props: Props) {
+async function loadUser({ params }: Props) {
 	'use server'
 
 	const user = db.user.findFirst({
 		where: {
 			username: {
-				equals: props.params.username,
+				equals: params.username,
 			},
 		},
 	})

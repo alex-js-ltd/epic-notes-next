@@ -27,7 +27,7 @@ async function loader({ params }: Props) {
 	}
 }
 
-async function action(props: Props, formData: FormData) {
+async function action({ params }: Props, formData: FormData) {
 	'use server'
 
 	const title = formData.get('title')
@@ -37,13 +37,11 @@ async function action(props: Props, formData: FormData) {
 	invariantResponse(typeof content === 'string', 'content must be a string')
 
 	db.note.update({
-		where: { id: { equals: props.params.id } },
+		where: { id: { equals: params.id } },
 		data: { title, content },
 	})
 
-	revalidatePath(
-		`/users/${props.params.username}/notes/${props.params.id}/edit`,
-	)
+	revalidatePath(`/users/${params.username}/notes/${params.id}/edit`)
 }
 
 export default async function NoteEdit(props: Props) {

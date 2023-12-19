@@ -25,16 +25,16 @@ async function loader({ params }: Props) {
 	}
 }
 
-async function action(props: Props, formData: FormData) {
+async function action({ params }: Props, formData: FormData) {
 	'use server'
 
 	const intent = formData.get('intent')
 
 	invariantResponse(intent === 'delete', 'Invalid intent')
 
-	db.note.delete({ where: { id: { equals: props.params.id } } })
+	db.note.delete({ where: { id: { equals: params.id } } })
 
-	redirect(`/users/${props.params.username}/notes`)
+	redirect(`/users/${params.username}/notes`)
 }
 
 export default async function NoteRoute(props: Props) {
