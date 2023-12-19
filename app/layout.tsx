@@ -67,4 +67,8 @@ export default async function RootLayout({
 export const metadata: Metadata = {
 	title: 'Epic Notes',
 	description: "Your own captain's log",
+
+	icons: {
+		icon: '/icon.svg',
+	},
 }

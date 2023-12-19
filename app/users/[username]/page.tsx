@@ -28,7 +28,11 @@ export default async function Page(props: Props) {
 	return (
 		<div className="container mb-48 mt-36">
 			<h1 className="text-h1">{data.user.name ?? data.user.username}</h1>
-			<Link href="notes" className="underline" prefetch={true}>
+			<Link
+				href={`/users/${props.params.username}/notes`}
+				className="underline"
+				prefetch={true}
+			>
 				Notes
 			</Link>
 		</div>
