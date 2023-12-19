@@ -2,7 +2,7 @@ import type { PropsWithChildren } from 'react'
 import Link from 'next/link'
 import ActiveLink from '@/app/comps/ui/active-link'
 import { db } from '@/app/lib/db.server'
-import { invariantResponse } from '@/app/lib/misc'
+import invariant from 'tiny-invariant'
 
 type Props = { params: { username: string } }
 
@@ -17,7 +17,7 @@ async function loadOwner({ params }: Props) {
 		},
 	})
 
-	invariantResponse(owner, 'Owner not found', { status: 404 })
+	invariant(owner, `No user with the username ${params.username} exists`)
 
 	return { owner }
 }
@@ -37,7 +37,7 @@ async function loadNotes({ params }: Props) {
 		})
 		.map(({ id, title }) => ({ id, title }))
 
-	invariantResponse(notes, 'Notes not found', { status: 404 })
+	invariant(notes, `Notes not found`)
 
 	return { notes }
 }

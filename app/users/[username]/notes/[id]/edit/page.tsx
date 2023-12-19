@@ -1,6 +1,4 @@
 import { db } from '@/app/lib/db.server'
-import { invariantResponse } from '@/app/lib/misc'
-import { notFound } from 'next/navigation'
 import { Button } from '@/app/comps/ui/button'
 import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
 import { Label } from '@/app/comps/ui/label'
@@ -8,6 +6,7 @@ import { Input } from '@/app/comps/ui/input'
 import { Textarea } from '@/app/comps/ui/textarea'
 import { StatusButton } from '@/app/comps/ui/status-button'
 import { revalidatePath } from 'next/cache'
+import invariant from 'tiny-invariant'
 
 type Props = { params: { id: string; username: string } }
 
@@ -22,7 +21,7 @@ async function loader({ params }: Props) {
 		},
 	})
 
-	invariantResponse(note, notFound, { status: 404 })
+	invariant(note, 'Note not found')
 
 	return {
 		note: { title: note.title, content: note.content },
@@ -35,8 +34,8 @@ async function action({ params }: Props, formData: FormData) {
 	const title = formData.get('title')
 	const content = formData.get('content')
 
-	invariantResponse(typeof title === 'string', 'title must be a string')
-	invariantResponse(typeof content === 'string', 'content must be a string')
+	invariant(typeof title === 'string', 'title must be a string')
+	invariant(typeof content === 'string', 'content must be a string')
 
 	db.note.update({
 		where: { id: { equals: params.id } },

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { db } from '@/app/lib/db.server'
-import { invariantResponse } from '@/app/lib/misc'
+import invariant from 'tiny-invariant'
 
 type Props = { params: { username: string } }
 
@@ -15,7 +15,7 @@ async function loadUser({ params }: Props) {
 		},
 	})
 
-	invariantResponse(user, 'User not found', { status: 404 })
+	invariant(user, `No user with the username ${params.username} exists`)
 
 	return {
 		user: { name: user.name, username: user.username },
