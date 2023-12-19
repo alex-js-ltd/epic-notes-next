@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { db } from '@/app/lib/db.server'
 import { invariantResponse } from '@/app/lib/misc'
 
@@ -16,7 +17,7 @@ async function loader({ params }: Props) {
 		},
 	})
 
-	invariantResponse(note, 'Note not found', { status: 404 })
+	invariantResponse(note, notFound, { status: 404 })
 
 	return {
 		note: { title: note.title, content: note.content },
