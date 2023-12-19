@@ -21,7 +21,7 @@ async function loader({ params }: Props) {
 		},
 	})
 
-	invariant(note, 'Note not found')
+	invariant(note, `No note with the id ${params.id} exists`)
 
 	return {
 		note: { title: note.title, content: note.content },

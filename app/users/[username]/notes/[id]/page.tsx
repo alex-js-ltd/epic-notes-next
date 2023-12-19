@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { db } from '@/app/lib/db.server'
-import { invariantResponse } from '@/app/lib/misc'
 import { Button } from '@/app/comps/ui/button'
 import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
+import invariant from 'tiny-invariant'
 
 type Props = { params: { id: string; username: string } }
 
@@ -18,7 +18,7 @@ async function loader({ params }: Props) {
 		},
 	})
 
-	invariantResponse(note, 'Note not found', { status: 404 })
+	invariant(note, `No note with the id ${params.id} exists`)
 
 	return {
 		note: { title: note.title, content: note.content },
@@ -30,7 +30,7 @@ async function action({ params }: Props, formData: FormData) {
 
 	const intent = formData.get('intent')
 
-	invariantResponse(intent === 'delete', 'Invalid intent')
+	invariant(intent === 'delete', 'Invalid intent')
 
 	db.note.delete({ where: { id: { equals: params.id } } })
 
