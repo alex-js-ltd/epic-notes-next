@@ -9,7 +9,6 @@ import os from 'node:os'
 import path from 'node:path'
 import { factory, manyOf, nullable, oneOf, primaryKey } from '@mswjs/data'
 import { singleton } from './singleton.server'
-import { typedBoolean } from './misc'
 
 const getId = () => crypto.randomBytes(16).toString('hex').slice(0, 8)
 
@@ -191,7 +190,7 @@ export async function updateNote({
 		data: {
 			title,
 			content,
-			images: noteImages.filter(typedBoolean),
+			images: noteImages.filter(Boolean),
 		},
 	})
 }
