@@ -1,54 +1,20 @@
 import type { PropsWithChildren } from 'react'
 import Link from 'next/link'
 import ActiveLink from '@/app/comps/ui/active-link'
-import { db } from '@/app/lib/db.server'
-import invariant from 'tiny-invariant'
+import { loadUser, loadNotes } from '@/app/lib/actions'
 
-type Props = { params: { username: string } }
-
-async function loadOwner({ params }: Props) {
-	'use server'
-
-	const owner = db.user.findFirst({
-		where: {
-			username: {
-				equals: params.username,
-			},
-		},
-	})
-
-	invariant(owner, `No user with the username ${params.username} exists`)
-
-	return { owner }
-}
-
-async function loadNotes({ params }: Props) {
-	'use server'
-
-	const notes = db.note
-		.findMany({
-			where: {
-				owner: {
-					username: {
-						equals: params.username,
-					},
-				},
-			},
-		})
-		.map(({ id, title }) => ({ id, title }))
-
-	invariant(notes, `Notes not found`)
-
-	return { notes }
-}
-
-export default async function NotesLayout(props: PropsWithChildren<Props>) {
-	const ownerPromise = loadOwner(props)
-	const notesPromise = loadNotes(props)
+export default async function NotesLayout({
+	params: { username },
+	children,
+}: PropsWithChildren<{
+	params: { username: string }
+}>) {
+	const ownerPromise = loadUser(username)
+	const notesPromise = loadNotes(username)
 
 	const [ownerData, notesData] = await Promise.all([ownerPromise, notesPromise])
 
-	const ownerDisplayName = ownerData.owner.name ?? ownerData.owner.username
+	const ownerDisplayName = ownerData.user.name ?? ownerData.user.username
 	const navLinkDefaultClassName =
 		'line-clamp-2 block rounded-l-full py-2 pl-8 pr-6 text-base lg:text-xl'
 
@@ -79,7 +45,7 @@ export default async function NotesLayout(props: PropsWithChildren<Props>) {
 					</div>
 				</div>
 				<div className="relative col-span-3 bg-accent md:rounded-r-3xl">
-					{props.children}
+					{children}
 				</div>
 			</div>
 		</main>
