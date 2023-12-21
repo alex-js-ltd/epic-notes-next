@@ -1,48 +1,18 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { db } from '@/app/lib/db.server'
+
 import { Button } from '@/app/comps/ui/button'
 import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
-import invariant from 'tiny-invariant'
 
-async function loader(noteId: string) {
-	'use server'
-
-	const note = db.note.findFirst({
-		where: {
-			id: {
-				equals: noteId,
-			},
-		},
-	})
-
-	invariant(note, `No note with the id ${noteId} exists`)
-
-	return {
-		note: { title: note.title, content: note.content },
-	}
-}
-
-async function action(noteId: string, formData: FormData) {
-	'use server'
-
-	const intent = formData.get('intent')
-
-	invariant(intent === 'delete', 'Invalid intent')
-
-	db.note.delete({ where: { id: { equals: noteId } } })
-
-	redirect(`/users/${noteId}/notes`)
-}
+import { loadNote, removeNote } from '@/app/lib/actions'
 
 export default async function NoteRoute({
 	params: { noteId, username },
 }: {
 	params: { noteId: string; username: string }
 }) {
-	const data = await loader(noteId)
+	const data = await loadNote(noteId)
 
-	const deleteNoteWithId = action.bind(null, noteId)
+	const deleteNoteWithId = removeNote.bind(null, noteId)
 
 	return (
 		<div className="absolute inset-0 flex flex-col px-10">

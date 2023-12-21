@@ -1,44 +1,7 @@
 import type { PropsWithChildren } from 'react'
 import Link from 'next/link'
 import ActiveLink from '@/app/comps/ui/active-link'
-import { db } from '@/app/lib/db.server'
-import invariant from 'tiny-invariant'
-
-export async function loadOwner(username: string) {
-	'use server'
-	const owner = db.user.findFirst({
-		where: {
-			username: {
-				equals: username,
-			},
-		},
-	})
-
-	invariant(owner, `No owener withe the name ${username} found`)
-
-	return {
-		owner: { name: owner.name, username: owner.username },
-	}
-}
-
-export async function loadNotes(username: string) {
-	'use server'
-	const notes = db.note
-		.findMany({
-			where: {
-				owner: {
-					username: {
-						equals: username,
-					},
-				},
-			},
-		})
-		.map(({ id, title }) => ({ id, title }))
-
-	invariant(notes, `Notes not found`)
-
-	return { notes }
-}
+import { loadUser, loadNotes } from '@/app/lib/actions'
 
 export default async function NotesLayout({
 	params: { username },
@@ -46,12 +9,12 @@ export default async function NotesLayout({
 }: PropsWithChildren<{
 	params: { username: string }
 }>) {
-	const ownerPromise = loadOwner(username)
+	const ownerPromise = loadUser(username)
 	const notesPromise = loadNotes(username)
 
 	const [ownerData, notesData] = await Promise.all([ownerPromise, notesPromise])
 
-	const ownerDisplayName = ownerData.owner.name ?? ownerData.owner.username
+	const ownerDisplayName = ownerData.user.name ?? ownerData.user.username
 	const navLinkDefaultClassName =
 		'line-clamp-2 block rounded-l-full py-2 pl-8 pr-6 text-base lg:text-xl'
 
