@@ -8,27 +8,28 @@ import { StatusButton } from '@/app/comps/ui/status-button'
 import { revalidatePath } from 'next/cache'
 import invariant from 'tiny-invariant'
 
-type Props = { params: { id: string; username: string } }
-
-async function loader({ params }: Props) {
+async function loader(noteId: string) {
 	'use server'
 
 	const note = db.note.findFirst({
 		where: {
 			id: {
-				equals: params.id,
+				equals: noteId,
 			},
 		},
 	})
 
-	invariant(note, `No note with the id ${params.id} exists`)
+	invariant(note, `No note with the id ${noteId} exists`)
 
 	return {
 		note: { title: note.title, content: note.content },
 	}
 }
 
-async function action({ params }: Props, formData: FormData) {
+async function action(
+	{ noteId, username }: { noteId: string; username: string },
+	formData: FormData,
+) {
 	'use server'
 
 	const title = formData.get('title')
@@ -38,17 +39,21 @@ async function action({ params }: Props, formData: FormData) {
 	invariant(typeof content === 'string', 'content must be a string')
 
 	db.note.update({
-		where: { id: { equals: params.id } },
+		where: { id: { equals: noteId } },
 		data: { title, content },
 	})
 
-	revalidatePath(`/users/${params.username}/notes/${params.id}/edit`)
+	revalidatePath(`/users/${username}/notes/${noteId}/edit`)
 }
 
-export default async function NoteEdit(props: Props) {
-	const data = await loader(props)
+export default async function NoteEdit({
+	params,
+}: {
+	params: { noteId: string; username: string }
+}) {
+	const data = await loader(params.noteId)
 
-	const updateNoteWithId = action.bind(null, props)
+	const updateNoteWithId = action.bind(null, params)
 	return (
 		<form
 			method="POST"

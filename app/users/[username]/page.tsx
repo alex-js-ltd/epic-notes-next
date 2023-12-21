@@ -1,5 +1,24 @@
 import Link from 'next/link'
-import { loadUser } from '@/app/lib/actions'
+import { db } from '@/app/lib/db.server'
+import invariant from 'tiny-invariant'
+
+export async function loadUser(username: string) {
+	'use-server'
+
+	const user = db.user.findFirst({
+		where: {
+			username: {
+				equals: username,
+			},
+		},
+	})
+
+	invariant(user, `No user with the username ${username} exists`)
+
+	return {
+		user: { name: user.name, username: user.username },
+	}
+}
 
 export default async function Page({
 	params: { username },

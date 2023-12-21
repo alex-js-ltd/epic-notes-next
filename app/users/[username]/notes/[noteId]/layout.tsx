@@ -3,30 +3,32 @@ import type { Metadata } from 'next'
 import { db } from '@/app/lib/db.server'
 import invariant from 'tiny-invariant'
 
-type Props = { params: { id: string; username: string } }
-
-async function loader({ params }: Props) {
+async function loader(noteId: string) {
 	'use server'
 
 	const note = db.note.findFirst({
 		where: {
 			id: {
-				equals: params.id,
+				equals: noteId,
 			},
 		},
 	})
 
-	invariant(note, `No note with the id ${params.id} exists`)
+	invariant(note, `No note with the id ${noteId} exists`)
 
 	return {
 		note: { title: note.title, content: note.content },
 	}
 }
 
-export async function generateMetadata(props: Props): Promise<Metadata> {
-	const data = await loader(props)
+export async function generateMetadata({
+	params: { noteId, username },
+}: {
+	params: { noteId: string; username: string }
+}): Promise<Metadata> {
+	const data = await loader(noteId)
 
-	const displayName = props.params.username ?? ''
+	const displayName = username ?? ''
 	const noteTitle = data?.note.title ?? 'Note'
 	const noteContentsSummary =
 		data && data.note.content.length > 100

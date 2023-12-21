@@ -5,42 +5,44 @@ import { Button } from '@/app/comps/ui/button'
 import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
 import invariant from 'tiny-invariant'
 
-type Props = { params: { id: string; username: string } }
-
-async function loader({ params }: Props) {
+async function loader(noteId: string) {
 	'use server'
 
 	const note = db.note.findFirst({
 		where: {
 			id: {
-				equals: params.id,
+				equals: noteId,
 			},
 		},
 	})
 
-	invariant(note, `No note with the id ${params.id} exists`)
+	invariant(note, `No note with the id ${noteId} exists`)
 
 	return {
 		note: { title: note.title, content: note.content },
 	}
 }
 
-async function action({ params }: Props, formData: FormData) {
+async function action(noteId: string, formData: FormData) {
 	'use server'
 
 	const intent = formData.get('intent')
 
 	invariant(intent === 'delete', 'Invalid intent')
 
-	db.note.delete({ where: { id: { equals: params.id } } })
+	db.note.delete({ where: { id: { equals: noteId } } })
 
-	redirect(`/users/${params.username}/notes`)
+	redirect(`/users/${noteId}/notes`)
 }
 
-export default async function NoteRoute(props: Props) {
-	const data = await loader(props)
+export default async function NoteRoute({
+	params: { noteId, username },
+}: {
+	params: { noteId: string; username: string }
+}) {
+	const data = await loader(noteId)
 
-	const deleteNoteWithId = action.bind(null, props)
+	const deleteNoteWithId = action.bind(null, noteId)
 
 	return (
 		<div className="absolute inset-0 flex flex-col px-10">
@@ -62,11 +64,7 @@ export default async function NoteRoute(props: Props) {
 					</Button>
 				</form>
 				<Button asChild>
-					<Link
-						href={`/users/${props.params.username}/notes/${props.params.id}/edit`}
-					>
-						Edit
-					</Link>
+					<Link href={`/users/${username}/notes/${noteId}/edit`}>Edit</Link>
 				</Button>
 			</div>
 		</div>
