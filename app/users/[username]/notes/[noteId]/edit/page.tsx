@@ -8,12 +8,7 @@ export default async function Page({
 }) {
 	const data = await loadNote(params.noteId)
 
-	return <EditForm {...getEditFormProps(data, params)} />
-}
+	const props = { ...data.note, ...params }
 
-function getEditFormProps(
-	data: { note: { title: string; content: string } },
-	params: { noteId: string; username: string },
-) {
-	return { ...data.note, ...params }
+	return <EditForm {...props} />
 }
