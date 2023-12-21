@@ -1,7 +1,7 @@
 'use server'
 
 import os from 'node:os'
-import { db } from '@/app/lib/db.server'
+import { db, updateNote } from '@/app/lib/db.server'
 import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
@@ -70,20 +70,18 @@ export async function removeNote(noteId: string, formData: FormData) {
 	redirect(`/users/${noteId}/notes`)
 }
 
-export async function updateNote(
-	{ noteId, username }: { noteId: string; username: string },
-	formData: FormData,
-) {
+export async function editNote(_prevState: any, formData: FormData) {
+	const noteId = formData.get('id')
 	const title = formData.get('title')
 	const content = formData.get('content')
+	const username = formData.get('username')
 
+	invariant(typeof noteId === 'string', 'id must be a string')
 	invariant(typeof title === 'string', 'title must be a string')
 	invariant(typeof content === 'string', 'content must be a string')
+	invariant(typeof username === 'string', 'username must be a string')
 
-	db.note.update({
-		where: { id: { equals: noteId } },
-		data: { title, content },
-	})
+	await updateNote({ id: noteId, title, content })
 
 	revalidatePath(`/users/${username}/notes/${noteId}/edit`)
 }
