@@ -5,6 +5,7 @@ import { db, updateNote } from '@/app/lib/db.server'
 import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 
 export async function loadUserInfo() {
 	return { username: os.userInfo().username }
@@ -70,18 +71,34 @@ export async function removeNote(noteId: string, formData: FormData) {
 	redirect(`/users/${noteId}/notes`)
 }
 
+const titleMaxLength = 100
+const contentMaxLength = 10000
+
+const noteEditorSchema = z.object({
+	id: z.string(),
+	title: z.string().max(titleMaxLength),
+	content: z.string().max(contentMaxLength),
+	username: z.string(),
+})
+
 export async function editNote(_prevState: unknown, formData: FormData) {
-	const noteId = formData.get('id')
-	const title = formData.get('title')
-	const content = formData.get('content')
-	const username = formData.get('username')
+	const validatedFields = noteEditorSchema.safeParse({
+		id: formData.get('id'),
+		title: formData.get('title'),
+		content: formData.get('content'),
+		username: formData.get('username'),
+	})
 
-	invariant(typeof noteId === 'string', 'id must be a string')
-	invariant(typeof title === 'string', 'title must be a string')
-	invariant(typeof content === 'string', 'content must be a string')
-	invariant(typeof username === 'string', 'username must be a string')
+	// Return early if the form data is invalid
+	if (!validatedFields.success) {
+		return {
+			errors: validatedFields.error.flatten().fieldErrors,
+		}
+	}
 
-	await updateNote({ id: noteId, title, content })
+	await updateNote({ ...validatedFields.data })
 
-	revalidatePath(`/users/${username}/notes/${noteId}/edit`)
+	revalidatePath(
+		`/users/${validatedFields.data.username}/notes/${validatedFields.data.id}/edit`,
+	)
 }
