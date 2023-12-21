@@ -7,7 +7,6 @@ import { Label } from '@/app/comps/ui/label'
 import { Input } from '@/app/comps/ui/input'
 import { Textarea } from '@/app/comps/ui/textarea'
 import { StatusButton } from '@/app/comps/ui/status-button'
-
 import { editNote } from '@/app/lib/actions'
 
 export default function EditForm({

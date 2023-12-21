@@ -70,7 +70,7 @@ export async function removeNote(noteId: string, formData: FormData) {
 	redirect(`/users/${noteId}/notes`)
 }
 
-export async function editNote(_prevState: any, formData: FormData) {
+export async function editNote(_prevState: unknown, formData: FormData) {
 	const noteId = formData.get('id')
 	const title = formData.get('title')
 	const content = formData.get('content')

@@ -8,7 +8,10 @@ export default async function Page({
 }) {
 	const data = await loadNote(params.noteId)
 
-	const props = { ...data.note, ...params }
+	const props: React.ComponentProps<typeof EditForm> = {
+		...data.note,
+		...params,
+	}
 
 	return <EditForm {...props} />
 }
