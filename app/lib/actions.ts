@@ -92,7 +92,8 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	// Return early if the form data is invalid
 	if (!validatedFields.success) {
 		return {
-			errors: validatedFields.error.flatten().fieldErrors,
+			fieldErrors: validatedFields.error.flatten().fieldErrors,
+			formErrors: validatedFields.error.flatten().formErrors,
 		}
 	}
 

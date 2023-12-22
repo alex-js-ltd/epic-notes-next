@@ -24,15 +24,6 @@ export default function EditForm({
 
 	const formId = 'note-editor'
 
-	const fieldErrors = state?.errors
-
-	const formErrors = [
-		...(fieldErrors?.title ?? []),
-		...(fieldErrors?.content ?? []),
-		...(fieldErrors?.username ?? []),
-		...(fieldErrors?.id ?? []),
-	]
-
 	return (
 		<form
 			id={formId}
@@ -53,7 +44,7 @@ export default function EditForm({
 					/>
 
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList errors={fieldErrors?.title} />
+						<ErrorList errors={state?.fieldErrors?.title} />
 					</div>
 				</div>
 				<div>
@@ -67,7 +58,7 @@ export default function EditForm({
 						maxLength={10000}
 					/>
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList errors={fieldErrors?.content} />
+						<ErrorList errors={state?.fieldErrors?.content} />
 					</div>
 				</div>
 			</div>
@@ -80,7 +71,7 @@ export default function EditForm({
 				</StatusButton>
 			</div>
 
-			<ErrorList errors={formErrors} />
+			<ErrorList errors={state?.formErrors} />
 
 			<input type="hidden" name="id" value={noteId} required />
 			<input type="hidden" name="username" value={username} required />
