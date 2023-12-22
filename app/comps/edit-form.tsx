@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
 import { useFormState } from 'react-dom'
 import { Button } from '@/app/comps/ui/button'
 import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
@@ -9,6 +9,7 @@ import { Input } from '@/app/comps/ui/input'
 import { Textarea } from '@/app/comps/ui/textarea'
 import { StatusButton } from '@/app/comps/ui/status-button'
 import { editNote } from '@/app/lib/actions'
+import { useFocusInvalid } from '../lib/hooks'
 
 export default function EditForm({
 	noteId,
@@ -110,20 +111,4 @@ function ErrorList({ errors }: { errors?: Array<string> | null }) {
 			))}
 		</ul>
 	) : null
-}
-
-function useFocusInvalid(formEl: HTMLFormElement | null, hasErrors: boolean) {
-	useEffect(() => {
-		if (!formEl) return
-		if (!hasErrors) return
-
-		if (formEl.matches('[aria-invalid="true"]')) {
-			formEl.focus()
-		} else {
-			const firstInvalid = formEl.querySelector('[aria-invalid="true"]')
-			if (firstInvalid instanceof HTMLElement) {
-				firstInvalid.focus()
-			}
-		}
-	}, [formEl, hasErrors])
 }
