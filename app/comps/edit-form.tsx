@@ -37,7 +37,7 @@ export default function EditForm({
 
 	const isHydrated = useHydrated()
 
-	useFocusInvalid(formRef.current, state?.status === 'error')
+	useFocusInvalid(formRef.current, formHasErrors)
 
 	return (
 		<form
@@ -67,7 +67,7 @@ export default function EditForm({
 					/>
 
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList errors={state?.fieldErrors?.title} />
+						<ErrorList id={titleErrorId} errors={state?.fieldErrors?.title} />
 					</div>
 				</div>
 				<div>
@@ -83,7 +83,10 @@ export default function EditForm({
 						aria-describedby={contentErrorId}
 					/>
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList errors={state?.fieldErrors?.content} />
+						<ErrorList
+							id={contentErrorId}
+							errors={state?.fieldErrors?.content}
+						/>
 					</div>
 				</div>
 			</div>
@@ -96,7 +99,7 @@ export default function EditForm({
 				</StatusButton>
 			</div>
 
-			<ErrorList errors={state?.formErrors} />
+			<ErrorList id={formErrorId} errors={state?.formErrors} />
 
 			<input type="hidden" name="id" value={noteId} required />
 			<input type="hidden" name="username" value={username} required />
@@ -104,9 +107,15 @@ export default function EditForm({
 	)
 }
 
-function ErrorList({ errors }: { errors?: Array<string> | null }) {
+function ErrorList({
+	id,
+	errors,
+}: {
+	id?: string
+	errors?: Array<string> | null
+}) {
 	return errors?.length ? (
-		<ul className="flex flex-col gap-1">
+		<ul id={id} className="flex flex-col gap-1">
 			{errors.map((error, i) => (
 				<li key={i} className="text-[10px] text-foreground-destructive">
 					{error}
