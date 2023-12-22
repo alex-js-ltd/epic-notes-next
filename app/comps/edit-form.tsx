@@ -27,10 +27,10 @@ export default function EditForm({
 	const fieldErrors = state?.errors
 
 	const formErrors = [
-		...(state?.errors.title ?? []),
-		...(state?.errors.content ?? []),
-		...(state?.errors.username ?? []),
-		...(state?.errors.id ?? []),
+		...(fieldErrors?.title ?? []),
+		...(fieldErrors?.content ?? []),
+		...(fieldErrors?.username ?? []),
+		...(fieldErrors?.id ?? []),
 	]
 
 	return (
@@ -72,7 +72,7 @@ export default function EditForm({
 				</div>
 			</div>
 			<div className={floatingToolbarClassName}>
-				<Button variant="destructive" type="reset">
+				<Button form={formId} variant="destructive" type="reset">
 					Reset
 				</Button>
 				<StatusButton type="submit" disabled={false}>
