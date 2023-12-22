@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { useEffect } from 'react'
 
 /**
  * Does its best to get a string error message from an unknown error.
