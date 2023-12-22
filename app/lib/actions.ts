@@ -75,8 +75,14 @@ const titleMaxLength = 100
 const contentMaxLength = 10000
 
 const noteEditorSchema = z.object({
-	title: z.string().max(titleMaxLength),
-	content: z.string().max(contentMaxLength),
+	title: z
+		.string()
+		.min(1, { message: 'Title is required' })
+		.max(titleMaxLength),
+	content: z
+		.string()
+		.min(1, { message: 'Content is required' })
+		.max(contentMaxLength),
 	id: z.string(),
 	username: z.string(),
 })
@@ -94,6 +100,7 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		return {
 			fieldErrors: validatedFields.error.flatten().fieldErrors,
 			formErrors: validatedFields.error.flatten().formErrors,
+			status: 'error',
 		}
 	}
 

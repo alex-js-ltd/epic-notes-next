@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef, useEffect } from 'react'
 import { useFormState } from 'react-dom'
 import { Button } from '@/app/comps/ui/button'
 import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
@@ -20,9 +21,20 @@ export default function EditForm({
 	content: string
 	username: string
 }) {
+	const formRef = useRef<HTMLFormElement>(null)
+
 	const [state, formAction] = useFormState(editNote, null)
 
 	const formId = 'note-editor'
+
+	const formHasErrors = Boolean(state?.formErrors?.length)
+	const formErrorId = formHasErrors ? 'form-error' : undefined
+	const titleHasErrors = Boolean(state?.fieldErrors?.title?.length)
+	const titleErrorId = titleHasErrors ? 'title-error' : undefined
+	const contentHasErrors = Boolean(state?.fieldErrors?.content?.length)
+	const contentErrorId = contentHasErrors ? 'content-error' : undefined
+
+	useFocusInvalid(formRef.current, state?.status === 'error')
 
 	return (
 		<form
@@ -30,6 +42,10 @@ export default function EditForm({
 			method="POST"
 			className="flex h-full flex-col gap-y-4 overflow-x-hidden px-10 pb-28 pt-12"
 			action={formAction}
+			aria-invalid={formHasErrors || undefined}
+			aria-describedby={formErrorId}
+			ref={formRef}
+			tabIndex={-1}
 		>
 			<div className="flex flex-col gap-1">
 				<div>
@@ -39,8 +55,11 @@ export default function EditForm({
 						id="note-title"
 						name="title"
 						defaultValue={title}
-						required
 						maxLength={100}
+						// required
+						aria-invalid={titleHasErrors || undefined}
+						aria-describedby={titleErrorId}
+						autoFocus
 					/>
 
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
@@ -54,8 +73,10 @@ export default function EditForm({
 						id="note-content"
 						name="content"
 						defaultValue={content}
-						required
+						// required
 						maxLength={10000}
+						aria-invalid={contentHasErrors || undefined}
+						aria-describedby={contentErrorId}
 					/>
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
 						<ErrorList errors={state?.fieldErrors?.content} />
@@ -89,4 +110,20 @@ function ErrorList({ errors }: { errors?: Array<string> | null }) {
 			))}
 		</ul>
 	) : null
+}
+
+function useFocusInvalid(formEl: HTMLFormElement | null, hasErrors: boolean) {
+	useEffect(() => {
+		if (!formEl) return
+		if (!hasErrors) return
+
+		if (formEl.matches('[aria-invalid="true"]')) {
+			formEl.focus()
+		} else {
+			const firstInvalid = formEl.querySelector('[aria-invalid="true"]')
+			if (firstInvalid instanceof HTMLElement) {
+				firstInvalid.focus()
+			}
+		}
+	}, [formEl, hasErrors])
 }
