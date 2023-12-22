@@ -88,19 +88,15 @@ const noteEditorSchema = z.object({
 })
 
 export async function editNote(_prevState: unknown, formData: FormData) {
-	const validatedFields = noteEditorSchema.safeParse({
-		id: formData.get('id'),
-		title: formData.get('title'),
-		content: formData.get('content'),
-		username: formData.get('username'),
-	})
+	const formBody = Object.fromEntries(formData.entries())
+
+	const validatedFields = noteEditorSchema.safeParse(formBody)
 
 	// Return early if the form data is invalid
 	if (!validatedFields.success) {
 		return {
 			fieldErrors: validatedFields.error.flatten().fieldErrors,
 			formErrors: validatedFields.error.flatten().formErrors,
-			status: 'error',
 		}
 	}
 
