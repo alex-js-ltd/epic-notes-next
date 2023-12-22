@@ -9,7 +9,7 @@ import { Input } from '@/app/comps/ui/input'
 import { Textarea } from '@/app/comps/ui/textarea'
 import { StatusButton } from '@/app/comps/ui/status-button'
 import { editNote } from '@/app/lib/actions'
-import { useFocusInvalid } from '../lib/hooks'
+import { useFocusInvalid, useHydrated } from '../lib/hooks'
 
 export default function EditForm({
 	noteId,
@@ -35,11 +35,14 @@ export default function EditForm({
 	const contentHasErrors = Boolean(state?.fieldErrors?.content?.length)
 	const contentErrorId = contentHasErrors ? 'content-error' : undefined
 
+	const isHydrated = useHydrated()
+
 	useFocusInvalid(formRef.current, state?.status === 'error')
 
 	return (
 		<form
 			id={formId}
+			noValidate={isHydrated}
 			method="POST"
 			className="flex h-full flex-col gap-y-4 overflow-x-hidden px-10 pb-28 pt-12"
 			action={formAction}
@@ -57,7 +60,7 @@ export default function EditForm({
 						name="title"
 						defaultValue={title}
 						maxLength={100}
-						// required
+						required
 						aria-invalid={titleHasErrors || undefined}
 						aria-describedby={titleErrorId}
 						autoFocus
@@ -74,7 +77,7 @@ export default function EditForm({
 						id="note-content"
 						name="content"
 						defaultValue={content}
-						// required
+						required
 						maxLength={10000}
 						aria-invalid={contentHasErrors || undefined}
 						aria-describedby={contentErrorId}

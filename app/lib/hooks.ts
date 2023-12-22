@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 export function useFocusInvalid(
 	formEl: HTMLFormElement | null,
 	hasErrors: boolean,
@@ -16,4 +16,10 @@ export function useFocusInvalid(
 			}
 		}
 	}, [formEl, hasErrors])
+}
+
+export function useHydrated() {
+	const [hydrated, setHydrated] = useState(false)
+	useEffect(() => setHydrated(true), [])
+	return hydrated
 }
