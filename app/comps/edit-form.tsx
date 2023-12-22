@@ -24,6 +24,8 @@ export default function EditForm({
 
 	const formId = 'note-editor'
 
+	const fieldErrors = state?.errors
+
 	const formErrors = [
 		...(state?.errors.title ?? []),
 		...(state?.errors.content ?? []),
@@ -41,24 +43,31 @@ export default function EditForm({
 			<div className="flex flex-col gap-1">
 				<div>
 					{/* 🦉 NOTE: this is not an accessible label, we'll get to that in the accessibility exercises */}
-					<Label>Title</Label>
-					<Input name="title" defaultValue={title} required maxLength={100} />
+					<Label htmlFor="note-title">Title</Label>
+					<Input
+						id="note-title"
+						name="title"
+						defaultValue={title}
+						required
+						maxLength={100}
+					/>
 
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList errors={state?.errors?.title} />
+						<ErrorList errors={fieldErrors?.title} />
 					</div>
 				</div>
 				<div>
 					{/* 🦉 NOTE: this is not an accessible label, we'll get to that in the accessibility exercises */}
-					<Label>Content</Label>
+					<Label htmlFor="note-content">Content</Label>
 					<Textarea
+						id="note-content"
 						name="content"
 						defaultValue={content}
 						required
 						maxLength={10000}
 					/>
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList errors={state?.errors.content} />
+						<ErrorList errors={fieldErrors?.content} />
 					</div>
 				</div>
 			</div>
