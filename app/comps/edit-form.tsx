@@ -73,8 +73,8 @@ export default function EditForm({
 
 			<ErrorList errors={formErrors} />
 
-			<input type="hidden" name="id" value={noteId} />
-			<input type="hidden" name="username" value={username} />
+			<input type="hidden" name="id" value={noteId} required />
+			<input type="hidden" name="username" value={username} required />
 		</form>
 	)
 }

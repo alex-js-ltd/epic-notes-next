@@ -75,9 +75,9 @@ const titleMaxLength = 100
 const contentMaxLength = 10000
 
 const noteEditorSchema = z.object({
-	id: z.string(),
 	title: z.string().max(titleMaxLength),
 	content: z.string().max(contentMaxLength),
+	id: z.string(),
 	username: z.string(),
 })
 
@@ -96,9 +96,9 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		}
 	}
 
-	await updateNote({ ...validatedFields.data })
+	const { id, title, content, username } = validatedFields.data
 
-	revalidatePath(
-		`/users/${validatedFields.data.username}/notes/${validatedFields.data.id}/edit`,
-	)
+	await updateNote({ id, title, content })
+
+	revalidatePath(`/users/${username}/notes/${id}/edit`)
 }
