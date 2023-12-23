@@ -13,20 +13,19 @@ import { useFocusInvalid, useHydrated } from '../lib/hooks'
 import { cn } from '../lib/misc'
 
 export default function EditForm({
-	noteId,
-	title,
-	content,
-	images,
-	username,
+	note,
+	user,
 }: {
-	noteId: string
-	title: string
-	content: string
-	images: Array<{
-		id: string
-		altText: string | null
-	}>
-	username: string
+	note: {
+		noteId: string
+		title: string
+		content: string
+		images: Array<{
+			id: string
+			altText: string | null
+		}>
+	}
+	user: { username: string }
 }) {
 	const formRef = useRef<HTMLFormElement>(null)
 
@@ -64,7 +63,7 @@ export default function EditForm({
 					<Input
 						id="note-title"
 						name="title"
-						defaultValue={title}
+						defaultValue={note.title}
 						maxLength={100}
 						required
 						aria-invalid={titleHasErrors || undefined}
@@ -82,7 +81,7 @@ export default function EditForm({
 					<Textarea
 						id="note-content"
 						name="content"
-						defaultValue={content}
+						defaultValue={note.content}
 						required
 						maxLength={10000}
 						aria-invalid={contentHasErrors || undefined}
@@ -98,7 +97,7 @@ export default function EditForm({
 
 				<div>
 					<Label>Image</Label>
-					<ImageChooser image={images[0]} />
+					<ImageChooser image={note.images[0]} />
 				</div>
 			</div>
 			<div className={floatingToolbarClassName}>
@@ -112,8 +111,8 @@ export default function EditForm({
 
 			<ErrorList id={formErrorId} errors={state?.formErrors} />
 
-			<input type="hidden" name="id" value={noteId} required />
-			<input type="hidden" name="username" value={username} required />
+			<input type="hidden" name="id" value={note.noteId} required />
+			<input type="hidden" name="username" value={user.username} required />
 		</form>
 	)
 }
