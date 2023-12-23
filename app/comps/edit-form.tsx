@@ -125,7 +125,7 @@ function ImageChooser({
 }) {
 	const existingImage = Boolean(image)
 	const [previewImage, setPreviewImage] = useState<string | null>(
-		existingImage ? `/resources/images/${image?.id}` : null,
+		existingImage ? `/images/${image?.id}` : null,
 	)
 	const [altText, setAltText] = useState(image?.altText ?? '')
 

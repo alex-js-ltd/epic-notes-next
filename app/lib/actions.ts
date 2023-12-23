@@ -56,13 +56,15 @@ export async function loadNote(noteId: string) {
 
 	invariant(note, `No note with the id ${noteId} exists`)
 
-	console.log('note image', note.images)
-
 	return {
 		note: {
 			title: note.title,
 			content: note.content,
-			images: note.images.map(i => ({ id: i.id, altText: i.altText })),
+			images: note.images.map(i => ({
+				id: i.id,
+				altText: i.altText,
+				filepath: i.filepath,
+			})),
 		},
 	}
 }
