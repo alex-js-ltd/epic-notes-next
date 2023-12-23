@@ -63,7 +63,6 @@ export async function loadNote(noteId: string) {
 			images: note.images.map(i => ({
 				id: i.id,
 				altText: i.altText,
-				filepath: i.filepath,
 			})),
 		},
 	}
