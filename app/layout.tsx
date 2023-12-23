@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react'
 import type { Metadata } from 'next'
-import os from 'node:os'
 import Link from 'next/link'
 import { Nunito_Sans } from 'next/font/google'
 import { cn } from './lib/misc'
+import { loadUserInfo } from './lib/actions'
 
 import './globals.css'
 
@@ -13,10 +13,6 @@ const nunito = Nunito_Sans({
 	subsets: ['latin'],
 	display: 'swap',
 })
-
-export async function loadUserInfo() {
-	return { username: os.userInfo().username }
-}
 
 export default async function RootLayout({
 	children,
