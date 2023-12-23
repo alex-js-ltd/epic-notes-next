@@ -1,4 +1,3 @@
-import { promises as fs } from 'fs'
 import Link from 'next/link'
 
 import { Button } from '@/app/comps/ui/button'
