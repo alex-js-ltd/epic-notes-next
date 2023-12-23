@@ -56,8 +56,14 @@ export async function loadNote(noteId: string) {
 
 	invariant(note, `No note with the id ${noteId} exists`)
 
+	console.log('note image', note.images)
+
 	return {
-		note: { title: note.title, content: note.content },
+		note: {
+			title: note.title,
+			content: note.content,
+			images: note.images.map(i => ({ id: i.id, altText: i.altText })),
+		},
 	}
 }
 
@@ -71,23 +77,22 @@ export async function removeNote(noteId: string, formData: FormData) {
 	redirect(`/users/${noteId}/notes`)
 }
 
-const titleMaxLength = 100
-const contentMaxLength = 10000
-
-const noteEditorSchema = z.object({
-	title: z
-		.string()
-		.min(1, { message: 'Title is required' })
-		.max(titleMaxLength),
-	content: z
-		.string()
-		.min(1, { message: 'Content is required' })
-		.max(contentMaxLength),
-	id: z.string(),
-	username: z.string(),
-})
-
 export async function editNote(_prevState: unknown, formData: FormData) {
+	const titleMaxLength = 100
+	const contentMaxLength = 10000
+
+	const noteEditorSchema = z.object({
+		title: z
+			.string()
+			.min(1, { message: 'Title is required' })
+			.max(titleMaxLength),
+		content: z
+			.string()
+			.min(1, { message: 'Content is required' })
+			.max(contentMaxLength),
+		id: z.string(),
+		username: z.string(),
+	})
 	const formBody = Object.fromEntries(formData.entries())
 
 	const validatedFields = noteEditorSchema.safeParse(formBody)
@@ -102,7 +107,21 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 
 	const { id, title, content, username } = validatedFields.data
 
-	await updateNote({ id, title, content })
+	await updateNote({
+		id,
+		title,
+		content,
+		images: [
+			{
+				// @ts-expect-error 🦺 we'll fix this in the next exercise
+				id: formData.get('imageId'),
+				// @ts-expect-error 🦺 we'll fix this in the next exercise
+				file: formData.get('file'),
+				// @ts-expect-error 🦺 we'll fix this in the next exercise
+				altText: formData.get('altText'),
+			},
+		],
+	})
 
 	revalidatePath(`/users/${username}/notes/${id}/edit`)
 }
