@@ -82,16 +82,22 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	const titleMaxLength = 100
 	const contentMaxLength = 10000
 
+	const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
+
 	const noteEditorSchema = z.object({
-		title: z
-			.string()
-			.min(1, { message: 'Title is required' })
-			.max(titleMaxLength),
-		content: z
-			.string()
-			.min(1, { message: 'Content is required' })
-			.max(contentMaxLength),
 		id: z.string(),
+		title: z.string().max(titleMaxLength),
+		content: z.string().max(contentMaxLength),
+		// 🐨 add imageId, file, and altText fields here (they should all be optional)
+		// 🐨 make sure the file is no larger than the MAX_UPLOAD_SIZE
+		imageId: z.string().optional(),
+		file: z
+			.instanceof(File)
+			.refine(file => {
+				return file.size <= MAX_UPLOAD_SIZE
+			}, 'File size must be less than 3MB')
+			.optional(),
+		altText: z.string().optional(),
 		username: z.string(),
 	})
 	const formBody = Object.fromEntries(formData.entries())
@@ -106,22 +112,14 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		}
 	}
 
-	const { id, title, content, username } = validatedFields.data
+	const { id, title, content, username, altText, file, imageId } =
+		validatedFields.data
 
 	await updateNote({
 		id,
 		title,
 		content,
-		images: [
-			{
-				// @ts-expect-error 🦺 we'll fix this in the next exercise
-				id: formData.get('imageId'),
-				// @ts-expect-error 🦺 we'll fix this in the next exercise
-				file: formData.get('file'),
-				// @ts-expect-error 🦺 we'll fix this in the next exercise
-				altText: formData.get('altText'),
-			},
-		],
+		images: [{ file, id: imageId, altText }],
 	})
 
 	revalidatePath(`/users/${username}/notes/${id}/edit`)
