@@ -86,7 +86,7 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
 
 	const imageFieldsetSchema = z.object({
-		id: z.string().optional(),
+		imageId: z.string().optional(),
 		file: z
 			.instanceof(File)
 			.refine(file => {
