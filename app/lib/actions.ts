@@ -98,8 +98,8 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 
 	const noteEditorSchema = z.object({
 		id: z.string(),
-		title: z.string().max(titleMaxLength),
-		content: z.string().max(contentMaxLength),
+		title: z.string().max(titleMaxLength).min(1),
+		content: z.string().max(contentMaxLength).min(1),
 		image: imageFieldsetSchema,
 	})
 
