@@ -8,7 +8,7 @@ export default async function Page({
 }) {
 	const data = await loadNote(noteId)
 
-	const props: React.ComponentProps<typeof EditForm> = {
+	const props = {
 		note: { ...data.note },
 		user: { username },
 	}
