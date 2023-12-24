@@ -97,22 +97,24 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	})
 
 	const noteEditorSchema = z.object({
-		id: z.string().min(1),
-		title: z.string().max(titleMaxLength).min(1),
-		content: z.string().max(contentMaxLength).min(1),
+		id: z.string(),
+		title: z.string().max(titleMaxLength),
+		content: z.string().max(contentMaxLength),
 		image: imageFieldsetSchema,
 	})
 
-	const validatedFields = noteEditorSchema.safeParse({
+	const data = {
 		id: formData.get('id'),
 		title: formData.get('title'),
 		content: formData.get('content'),
 		image: {
-			id: formData.get('imageId'),
+			imageId: formData.get('imageId') ?? undefined,
 			file: formData.get('file'),
 			altText: formData.get('altText'),
 		},
-	})
+	}
+
+	const validatedFields = noteEditorSchema.safeParse(data)
 
 	// Return early if the form data is invalid
 	if (!validatedFields.success) {
@@ -125,11 +127,13 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 
 	const { id, title, content, image } = validatedFields.data
 
+	const { imageId, ...rest } = image
+
 	await updateNote({
 		id,
 		title,
 		content,
-		images: [{ file: image.file, id: image.imageId, altText: image.altText }],
+		images: [{ id: imageId, ...rest }],
 	})
 
 	const username = formData.get('username')
