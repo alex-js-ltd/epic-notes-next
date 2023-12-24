@@ -124,7 +124,13 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	}
 
 	const { id, title, content, image } = validatedFields.data
-	await updateNote({ id, title, content, images: [image] })
+
+	await updateNote({
+		id,
+		title,
+		content,
+		images: [{ file: image.file, id: image.imageId, altText: image.altText }],
+	})
 
 	const username = formData.get('username')
 
