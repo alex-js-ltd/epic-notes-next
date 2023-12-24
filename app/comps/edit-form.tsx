@@ -55,6 +55,7 @@ export default function EditForm({
 			aria-describedby={formErrorId}
 			ref={formRef}
 			tabIndex={-1}
+			encType="multipart/form-data"
 		>
 			<div className="flex flex-col gap-1">
 				<div>

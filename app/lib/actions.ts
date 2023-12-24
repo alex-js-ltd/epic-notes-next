@@ -85,13 +85,8 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 
 	const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
 
-	const noteEditorSchema = z.object({
-		id: z.string(),
-		title: z.string().max(titleMaxLength),
-		content: z.string().max(contentMaxLength),
-		// 🐨 add imageId, file, and altText fields here (they should all be optional)
-		// 🐨 make sure the file is no larger than the MAX_UPLOAD_SIZE
-		imageId: z.string().optional(),
+	const imageFieldsetSchema = z.object({
+		id: z.string().optional(),
 		file: z
 			.instanceof(File)
 			.refine(file => {
@@ -99,31 +94,41 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 			}, 'File size must be less than 3MB')
 			.optional(),
 		altText: z.string().optional(),
-		username: z.string(),
 	})
-	const formBody = Object.fromEntries(formData.entries())
 
-	const validatedFields = noteEditorSchema.safeParse(formBody)
+	const noteEditorSchema = z.object({
+		id: z.string(),
+		title: z.string().max(titleMaxLength),
+		content: z.string().max(contentMaxLength),
+		image: imageFieldsetSchema,
+	})
 
-	console.log('validate fields', validatedFields)
+	const validatedFields = noteEditorSchema.safeParse({
+		id: formData.get('id'),
+		title: formData.get('title'),
+		content: formData.get('content'),
+		image: {
+			id: formData.get('imageId'),
+			file: formData.get('file'),
+			altText: formData.get('altText'),
+		},
+	})
 
 	// Return early if the form data is invalid
 	if (!validatedFields.success) {
+		console.log(validatedFields.error.flatten())
 		return {
 			fieldErrors: validatedFields.error.flatten().fieldErrors,
 			formErrors: validatedFields.error.flatten().formErrors,
 		}
 	}
 
-	const { id, title, content, username, altText, file, imageId } =
-		validatedFields.data
+	const { id, title, content, image } = validatedFields.data
+	await updateNote({ id, title, content, images: [image] })
 
-	await updateNote({
-		id,
-		title,
-		content,
-		images: [{ file, id: imageId, altText }],
-	})
+	const username = formData.get('username')
+
+	invariant(username, `No user with the username ${username} exists`)
 
 	revalidatePath(`/users/${username}/notes/${id}/edit`)
 }
