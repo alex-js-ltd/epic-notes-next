@@ -2,16 +2,11 @@ import { loadNote } from '@/app/lib/actions'
 import EditForm from '@/app/comps/edit-form'
 
 export default async function Page({
-	params: { username, noteId },
+	params,
 }: {
 	params: { noteId: string; username: string }
 }) {
-	const data = await loadNote(noteId)
+	const data = await loadNote(params.noteId)
 
-	const props = {
-		note: { ...data.note },
-		user: { username },
-	}
-
-	return <EditForm {...props} />
+	return <EditForm note={data.note} />
 }

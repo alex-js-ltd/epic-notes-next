@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { useParams } from 'next/navigation'
 import { useFormState } from 'react-dom'
 import { Button } from '@/app/comps/ui/button'
 import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
@@ -14,10 +15,8 @@ import { cn } from '../lib/misc'
 
 export default function EditForm({
 	note,
-	user,
 }: {
 	note: {
-		noteId: string
 		title: string
 		content: string
 		images: Array<{
@@ -25,9 +24,10 @@ export default function EditForm({
 			altText: string | null
 		}>
 	}
-	user: { username: string }
 }) {
 	const formRef = useRef<HTMLFormElement>(null)
+
+	const params = useParams<{ noteId: string; username: string }>()
 
 	const [state, formAction] = useFormState(editNote, null)
 
@@ -111,8 +111,8 @@ export default function EditForm({
 
 			<ErrorList id={formErrorId} errors={state?.formErrors} />
 
-			<input type="hidden" name="id" value={note.noteId} required />
-			<input type="hidden" name="username" value={user.username} required />
+			<input type="hidden" name="id" value={params.noteId} required />
+			<input type="hidden" name="username" value={params.username} required />
 		</form>
 	)
 }

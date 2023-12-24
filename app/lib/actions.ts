@@ -105,6 +105,8 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 
 	const validatedFields = noteEditorSchema.safeParse(formBody)
 
+	console.log('validate fields', validatedFields)
+
 	// Return early if the form data is invalid
 	if (!validatedFields.success) {
 		return {
