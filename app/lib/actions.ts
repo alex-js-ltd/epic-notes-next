@@ -85,7 +85,7 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 
 	const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
 
-	const imageFieldsetSchema = z.object({
+	const ImageFieldsetSchema = z.object({
 		imageId: z.string().optional(),
 		file: z
 			.instanceof(File)
@@ -100,18 +100,20 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		id: z.string(),
 		title: z.string().max(titleMaxLength).min(1),
 		content: z.string().max(contentMaxLength).min(1),
-		image: imageFieldsetSchema,
+		images: z.array(ImageFieldsetSchema),
 	})
 
 	const data = {
 		id: formData.get('id'),
 		title: formData.get('title'),
 		content: formData.get('content'),
-		image: {
-			imageId: formData.get('imageId') ?? undefined,
-			file: formData.get('file'),
-			altText: formData.get('altText'),
-		},
+		images: [
+			{
+				imageId: formData.get('imageId') ?? undefined,
+				file: formData.get('file'),
+				altText: formData.get('altText'),
+			},
+		],
 	}
 
 	const validatedFields = noteEditorSchema.safeParse(data)
@@ -125,15 +127,15 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		}
 	}
 
-	const { id, title, content, image } = validatedFields.data
-
-	const { imageId, ...rest } = image
+	const { id, title, content, images } = validatedFields.data
 
 	await updateNote({
 		id,
 		title,
 		content,
-		images: [{ id: imageId, ...rest }],
+		images: [
+			...images.map(({ imageId, ...rest }) => ({ id: imageId, ...rest })),
+		],
 	})
 
 	const username = formData.get('username')
