@@ -80,7 +80,9 @@ export async function removeNote(noteId: string, formData: FormData) {
 }
 
 export async function editNote(_prevState: unknown, formData: FormData) {
+	const titleMinLength = 1
 	const titleMaxLength = 100
+	const contentMinLength = 1
 	const contentMaxLength = 10000
 
 	const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
@@ -89,34 +91,54 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		imageId: z.string().optional(),
 		file: z
 			.instanceof(File)
+			.optional()
 			.refine(file => {
-				return file.size <= MAX_UPLOAD_SIZE
-			}, 'File size must be less than 3MB')
-			.optional(),
+				return !file || file.size <= MAX_UPLOAD_SIZE
+			}, 'File size must be less than 3MB'),
 		altText: z.string().optional(),
 	})
 
-	const noteEditorSchema = z.object({
-		id: z.string(),
-		title: z.string().max(titleMaxLength).min(1),
-		content: z.string().max(contentMaxLength).min(1),
-		images: z.array(ImageFieldsetSchema),
-	})
+	type ImageFieldset = z.infer<typeof ImageFieldsetSchema>
 
-	const data = {
+	function isImageFieldset(obj: any): obj is ImageFieldset {
+		try {
+			ImageFieldsetSchema.parse(obj)
+			return true
+		} catch (error) {
+			if (error instanceof z.ZodError) {
+				return false
+			}
+			throw error // rethrow if it's not a ZodError
+		}
+	}
+
+	const NoteEditorSchema = z.object({
+		id: z.string(),
+		title: z.string().min(titleMinLength).max(titleMaxLength),
+		content: z.string().min(contentMinLength).max(contentMaxLength),
+		images: z.array(ImageFieldsetSchema).max(5).optional(),
+	})
+	const imageIds = formData.getAll('imageId')
+	const files = formData.getAll('file')
+	const altText = formData.getAll('altText')
+
+	const mergedArray: ImageFieldset[] = []
+
+	for (let i = 0; i < files.length; i++) {
+		const obj = {
+			imageId: imageIds[i],
+			file: files[i],
+			altText: altText[i],
+		}
+		if (isImageFieldset(obj)) mergedArray.push(obj)
+	}
+
+	const validatedFields = NoteEditorSchema.safeParse({
 		id: formData.get('id'),
 		title: formData.get('title'),
 		content: formData.get('content'),
-		images: [
-			{
-				imageId: formData.get('imageId') ?? undefined,
-				file: formData.get('file'),
-				altText: formData.get('altText'),
-			},
-		],
-	}
-
-	const validatedFields = noteEditorSchema.safeParse(data)
+		images: mergedArray,
+	})
 
 	// Return early if the form data is invalid
 	if (!validatedFields.success) {
@@ -133,9 +155,7 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		id,
 		title,
 		content,
-		images: [
-			...images.map(({ imageId, ...rest }) => ({ id: imageId, ...rest })),
-		],
+		images: images?.map(({ imageId, ...rest }) => ({ id: imageId, ...rest })),
 	})
 
 	const username = formData.get('username')

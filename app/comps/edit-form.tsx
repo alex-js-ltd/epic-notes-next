@@ -98,6 +98,11 @@ export default function EditForm({
 					<Label>Image</Label>
 					<ImageChooser image={note.images[0]} />
 				</div>
+
+				<div>
+					<Label>Image</Label>
+					<ImageChooser image={note.images[0]} />
+				</div>
 			</div>
 			<div className={floatingToolbarClassName}>
 				<Button form={formId} variant="destructive" type="reset">
