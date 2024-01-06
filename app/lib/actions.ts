@@ -6,6 +6,7 @@ import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { NoteEditorSchema, ImageFieldsetSchema } from './schemas'
 
 export async function loadUserInfo() {
 	return { username: os.userInfo().username }
@@ -80,65 +81,24 @@ export async function removeNote(noteId: string, formData: FormData) {
 }
 
 export async function editNote(_prevState: unknown, formData: FormData) {
-	const titleMinLength = 1
-	const titleMaxLength = 100
-	const contentMinLength = 1
-	const contentMaxLength = 10000
+	console.log('form action fired')
 
-	const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
-
-	const ImageFieldsetSchema = z.object({
-		imageId: z.string().optional(),
-		file: z
-			.instanceof(File)
-			.optional()
-			.refine(file => {
-				return !file || file.size <= MAX_UPLOAD_SIZE
-			}, 'File size must be less than 3MB'),
-		altText: z.string().optional(),
-	})
-
-	type ImageFieldset = z.infer<typeof ImageFieldsetSchema>
-
-	function isImageFieldset(obj: any): obj is ImageFieldset {
-		try {
-			ImageFieldsetSchema.parse(obj)
-			return true
-		} catch (error) {
-			if (error instanceof z.ZodError) {
-				return false
-			}
-			throw error // rethrow if it's not a ZodError
-		}
-	}
-
-	const NoteEditorSchema = z.object({
-		id: z.string(),
-		title: z.string().min(titleMinLength).max(titleMaxLength),
-		content: z.string().min(contentMinLength).max(contentMaxLength),
-		images: z.array(ImageFieldsetSchema).max(5).optional(),
-	})
-	const imageIds = formData.getAll('imageId')
-	const files = formData.getAll('file')
-	const altText = formData.getAll('altText')
-
-	const mergedArray: ImageFieldset[] = []
-
-	for (let i = 0; i < files.length; i++) {
-		const obj = {
-			imageId: imageIds[i],
-			file: files[i],
-			altText: altText[i],
-		}
-		if (isImageFieldset(obj)) mergedArray.push(obj)
-	}
-
-	const validatedFields = NoteEditorSchema.safeParse({
+	const data = {
 		id: formData.get('id'),
 		title: formData.get('title'),
 		content: formData.get('content'),
-		images: mergedArray,
-	})
+		images: [
+			{
+				imageId: formData.get('imageId') ?? undefined,
+				file: formData.get('file'),
+				altText: formData.get('altText'),
+			},
+		],
+	}
+
+	console.log(data)
+
+	const validatedFields = NoteEditorSchema.safeParse(data)
 
 	// Return early if the form data is invalid
 	if (!validatedFields.success) {
