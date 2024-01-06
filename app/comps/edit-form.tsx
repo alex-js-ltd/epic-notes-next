@@ -31,14 +31,14 @@ export default function EditForm({
 }) {
 	const params = useParams<{ noteId: string; username: string }>()
 
-	const [state, formAction] = useFormState(editNote, null)
+	const [, formAction] = useFormState(editNote, null)
 
 	const formId = 'note-editor'
 
 	const {
 		trigger,
 		register,
-		handleSubmit,
+
 		formState: { errors },
 	} = useForm({
 		resolver: zodResolver(NoteEditorSchema),
@@ -58,7 +58,8 @@ export default function EditForm({
 			className="flex h-full flex-col gap-y-4 overflow-y-auto overflow-x-hidden px-10 pb-28 pt-12"
 			action={async (formData: FormData) => {
 				const valid = await trigger()
-				console.log(valid)
+
+				if (!valid) return
 
 				formAction(formData)
 			}}
@@ -70,7 +71,7 @@ export default function EditForm({
 					<Input autoFocus {...register('title')} />
 
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						{/* <ErrorList id={titleErrorId} errors={state?.fieldErrors?.title} /> */}
+						<ErrorList errors={[errors.title?.message]} />
 					</div>
 				</div>
 				<div>
@@ -78,10 +79,7 @@ export default function EditForm({
 					<Label htmlFor="note-content">Content</Label>
 					<Textarea {...register('content')} />
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						{/* <ErrorList
-							id={contentErrorId}
-							errors={state?.fieldErrors?.content}
-						/> */}
+						<ErrorList errors={[errors.content?.message]} />
 					</div>
 				</div>
 
@@ -200,7 +198,7 @@ function ErrorList({
 	errors,
 }: {
 	id?: string
-	errors?: Array<string> | null
+	errors?: Array<string | undefined> | null
 }) {
 	return errors?.length ? (
 		<ul id={id} className="flex flex-col gap-1">
