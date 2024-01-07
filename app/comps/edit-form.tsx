@@ -21,6 +21,7 @@ export default function EditForm({
 	note,
 }: {
 	note: {
+		id: string
 		title: string
 		content: string
 		images: Array<{
@@ -44,9 +45,9 @@ export default function EditForm({
 		resolver: zodResolver(NoteEditorSchema),
 
 		defaultValues: {
+			id: note.id,
 			title: note.title,
 			content: note.content,
-			id: params.noteId,
 			username: params.username,
 		},
 	})

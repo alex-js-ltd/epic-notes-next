@@ -59,7 +59,7 @@ export async function loadNote(noteId: string) {
 
 	return {
 		note: {
-			noteId,
+			id: noteId,
 			title: note.title,
 			content: note.content,
 			images: note.images.map(i => ({
