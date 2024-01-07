@@ -149,4 +149,6 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	})
 
 	revalidatePath(`/users/${username}/notes/${id}/edit`)
+	revalidatePath(`/users/${username}/notes/${id}`)
+	redirect(`/users/${username}/notes/${id}`)
 }
