@@ -45,8 +45,6 @@ export default function EditForm({
 
 	useFocusInvalid(formRef.current, formHasErrors)
 
-	console.log('state', state)
-
 	return (
 		<form
 			id={formId}
@@ -104,7 +102,7 @@ export default function EditForm({
 
 				<div>
 					<Label>Image</Label>
-					<ImageChooser image={note.images[0]} />
+					<ImageChooser image={note.images[1]} />
 				</div>
 			</div>
 			<div className={floatingToolbarClassName}>
@@ -166,9 +164,9 @@ function ImageChooser({
 									➕
 								</div>
 							)}
-							{existingImage ? (
-								<input name="imageId" type="hidden" value={image?.id} />
-							) : null}
+
+							<input name="imageId" type="hidden" value={image?.id} />
+
 							<input
 								id="image-input"
 								aria-label="Image"

@@ -87,7 +87,7 @@ const contentMaxLength = 10000
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
 
 const ImageFieldsetSchema = z.object({
-	imageId: z.string().optional(),
+	id: z.string().optional(),
 	file: z
 		.instanceof(File)
 		.optional()
@@ -105,6 +105,18 @@ const NoteEditorSchema = z.object({
 	username: z.string().min(1),
 })
 
+function getImages(formData: FormData) {
+	const imageIds = formData.getAll('imageId')
+	const files = formData.getAll('file')
+	const altTexts = formData.getAll('altText')
+
+	return imageIds.map((imageId, index) => ({
+		id: imageId,
+		file: files[index],
+		altText: altTexts[index],
+	}))
+}
+
 export async function editNote(_prevState: unknown, formData: FormData) {
 	console.log('form action fired')
 
@@ -112,18 +124,9 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		id: formData.get('id'),
 		title: formData.get('title'),
 		content: formData.get('content'),
-		images: [
-			{
-				imageId: formData.get('imageId') ?? undefined,
-				file: formData.get('file'),
-				altText: formData.get('altText'),
-			},
-		],
-
+		images: [...getImages(formData)],
 		username: formData.get('username'),
 	}
-
-	console.log(data)
 
 	const validatedFields = NoteEditorSchema.safeParse(data)
 
@@ -142,7 +145,7 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		id,
 		title,
 		content,
-		images: images?.map(({ imageId, ...rest }) => ({ id: imageId, ...rest })),
+		images,
 	})
 
 	revalidatePath(`/users/${username}/notes/${id}/edit`)
