@@ -21,9 +21,9 @@ export default async function NoteRoute({
 				<ul className="flex flex-wrap gap-5 py-5">
 					{data.note.images.map(image => (
 						<li key={image.id}>
-							<a href={`/images/${image.id}`}>
+							<a href={`/api/images/${image.id}`}>
 								<img
-									src={`/images/${image?.id}`}
+									src={`/api/images/${image?.id}`}
 									alt={image.altText ?? ''}
 									className="h-32 w-32 rounded-lg object-cover"
 								/>

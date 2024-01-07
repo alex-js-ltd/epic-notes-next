@@ -129,7 +129,7 @@ function ImageChooser({
 }) {
 	const existingImage = Boolean(image)
 	const [previewImage, setPreviewImage] = useState<string | null>(
-		existingImage ? `/images/${image?.id}` : null,
+		existingImage ? `/api/images/${image?.id}` : null,
 	)
 	const [altText, setAltText] = useState(image?.altText ?? '')
 
