@@ -69,14 +69,17 @@ export async function loadNote(noteId: string) {
 	}
 }
 
-export async function removeNote(noteId: string, formData: FormData) {
+export async function removeNote(
+	{ noteId, username }: { noteId: string; username: string },
+	formData: FormData,
+) {
 	const intent = formData.get('intent')
 
 	invariant(intent === 'delete', 'Invalid intent')
 
 	db.note.delete({ where: { id: { equals: noteId } } })
 
-	redirect(`/users/${noteId}/notes`)
+	redirect(`/users/${username}/notes`)
 }
 
 const titleMinLength = 1

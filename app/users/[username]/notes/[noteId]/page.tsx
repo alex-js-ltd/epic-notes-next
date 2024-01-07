@@ -12,7 +12,7 @@ export default async function NoteRoute({
 }) {
 	const data = await loadNote(noteId)
 
-	const deleteNoteWithId = removeNote.bind(null, noteId)
+	const deleteNoteWithId = removeNote.bind(null, { noteId, username })
 
 	return (
 		<div className="absolute inset-0 flex flex-col px-10">
