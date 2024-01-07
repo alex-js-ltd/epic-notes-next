@@ -117,8 +117,6 @@ export default function EditForm({
 				</StatusButton>
 			</div>
 
-			{/* <ErrorList id={formErrorId} errors={state?.formErrors} /> */}
-
 			<input type="hidden" required {...register('id')} />
 			<input type="hidden" required {...register('username')} />
 		</form>
