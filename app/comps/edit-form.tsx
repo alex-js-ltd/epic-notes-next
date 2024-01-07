@@ -13,6 +13,11 @@ import { editNote } from '@/app/lib/actions'
 import { useFocusInvalid, useHydrated } from '../lib/hooks'
 import { cn } from '../lib/misc'
 
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { NoteEditorSchema } from '../lib/schemas'
+
 export default function EditForm({
 	note,
 }: {
@@ -47,6 +52,17 @@ export default function EditForm({
 
 	console.log('state', state)
 
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<z.infer<typeof NoteEditorSchema>>({
+		progressive: true,
+		resolver: zodResolver(NoteEditorSchema),
+	})
+
+	console.log('errors', errors)
+
 	return (
 		<form
 			id={formId}
@@ -64,13 +80,9 @@ export default function EditForm({
 					<Label htmlFor="note-title">Title</Label>
 					<Input
 						id="note-title"
-						name="title"
-						defaultValue={note.title}
-						maxLength={100}
-						required
-						aria-invalid={titleHasErrors || undefined}
-						aria-describedby={titleErrorId}
+						value={note.title}
 						autoFocus
+						{...register('title')}
 					/>
 
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
@@ -82,12 +94,8 @@ export default function EditForm({
 					<Label htmlFor="note-content">Content</Label>
 					<Textarea
 						id="note-content"
-						name="content"
-						defaultValue={note.content}
-						required
-						maxLength={10000}
-						aria-invalid={contentHasErrors || undefined}
-						aria-describedby={contentErrorId}
+						value={note.content}
+						{...register('content')}
 					/>
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
 						<ErrorList
@@ -118,8 +126,13 @@ export default function EditForm({
 
 			<ErrorList id={formErrorId} errors={state?.formErrors} />
 
-			<input type="hidden" name="id" value={note.id} required />
-			<input type="hidden" name="username" value={params.username} required />
+			<input type="hidden" value={note.id} required {...register('id')} />
+			<input
+				type="hidden"
+				value={params.username}
+				required
+				{...register('username')}
+			/>
 		</form>
 	)
 }
