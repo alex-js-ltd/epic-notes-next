@@ -52,6 +52,11 @@ export default function EditForm({
 		},
 	})
 
+	const titleHasErrors = Boolean(errors?.title?.message)
+	const titleErrorId = titleHasErrors ? 'title-error' : undefined
+	const contentHasErrors = Boolean(errors?.content?.message)
+	const contentErrorId = contentHasErrors ? 'content-error' : undefined
+
 	return (
 		<form
 			id={formId}
@@ -67,18 +72,27 @@ export default function EditForm({
 		>
 			<div className="flex flex-col gap-1">
 				<div>
-					{/* 🦉 NOTE: this is not an accessible label, we'll get to that in the accessibility exercises */}
-					<Label htmlFor="note-title">Title</Label>
-					<Input autoFocus {...register('title')} />
+					<Label htmlFor="title">Title</Label>
+					<Input
+						id="title"
+						aria-invalid={titleHasErrors || undefined}
+						aria-describedby={titleErrorId}
+						autoFocus
+						{...register('title')}
+					/>
 
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
 						<ErrorList errors={[errors.title?.message]} />
 					</div>
 				</div>
 				<div>
-					{/* 🦉 NOTE: this is not an accessible label, we'll get to that in the accessibility exercises */}
-					<Label htmlFor="note-content">Content</Label>
-					<Textarea {...register('content')} />
+					<Label htmlFor="content">Content</Label>
+					<Textarea
+						id="content"
+						aria-invalid={contentHasErrors || undefined}
+						aria-describedby={contentErrorId}
+						{...register('content')}
+					/>
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
 						<ErrorList errors={[errors.content?.message]} />
 					</div>
