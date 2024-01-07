@@ -13,10 +13,6 @@ import { editNote } from '@/app/lib/actions'
 import { useFocusInvalid, useHydrated } from '../lib/hooks'
 import { cn } from '../lib/misc'
 
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { NoteEditorSchema } from '../lib/schemas'
-
 export default function EditForm({
 	note,
 }: {
@@ -30,71 +26,74 @@ export default function EditForm({
 		}>
 	}
 }) {
+	const formRef = useRef<HTMLFormElement>(null)
+
 	const params = useParams<{ noteId: string; username: string }>()
 
-	const [, formAction] = useFormState(editNote, null)
+	const [state, formAction] = useFormState(editNote, null)
 
 	const formId = 'note-editor'
 
-	const {
-		trigger,
-		register,
-
-		formState: { errors },
-	} = useForm({
-		resolver: zodResolver(NoteEditorSchema),
-
-		defaultValues: {
-			id: note.id,
-			title: note.title,
-			content: note.content,
-			username: params.username,
-		},
-	})
-
-	const titleHasErrors = Boolean(errors?.title?.message)
+	const formHasErrors = Boolean(state?.formErrors?.length)
+	const formErrorId = formHasErrors ? 'form-error' : undefined
+	const titleHasErrors = Boolean(state?.fieldErrors?.title?.length)
 	const titleErrorId = titleHasErrors ? 'title-error' : undefined
-	const contentHasErrors = Boolean(errors?.content?.message)
+	const contentHasErrors = Boolean(state?.fieldErrors?.content?.length)
 	const contentErrorId = contentHasErrors ? 'content-error' : undefined
+
+	const isHydrated = useHydrated()
+
+	useFocusInvalid(formRef.current, formHasErrors)
+
+	console.log('state', state)
 
 	return (
 		<form
 			id={formId}
-			method="post"
-			className="flex h-full flex-col gap-y-4 overflow-y-auto overflow-x-hidden px-10 pb-28 pt-12"
-			action={async (formData: FormData) => {
-				const valid = await trigger()
-
-				if (!valid) return
-
-				formAction(formData)
-			}}
+			noValidate={isHydrated}
+			className="flex h-full flex-col gap-y-4 overflow-x-hidden px-10 pb-28 pt-12"
+			action={formAction}
+			aria-invalid={formHasErrors || undefined}
+			aria-describedby={formErrorId}
+			ref={formRef}
+			tabIndex={-1}
 		>
 			<div className="flex flex-col gap-1">
 				<div>
-					<Label htmlFor="title">Title</Label>
+					{/* 🦉 NOTE: this is not an accessible label, we'll get to that in the accessibility exercises */}
+					<Label htmlFor="note-title">Title</Label>
 					<Input
-						id="title"
+						id="note-title"
+						name="title"
+						defaultValue={note.title}
+						maxLength={100}
+						required
 						aria-invalid={titleHasErrors || undefined}
 						aria-describedby={titleErrorId}
 						autoFocus
-						{...register('title')}
 					/>
 
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList errors={[errors.title?.message]} />
+						<ErrorList id={titleErrorId} errors={state?.fieldErrors?.title} />
 					</div>
 				</div>
 				<div>
-					<Label htmlFor="content">Content</Label>
+					{/* 🦉 NOTE: this is not an accessible label, we'll get to that in the accessibility exercises */}
+					<Label htmlFor="note-content">Content</Label>
 					<Textarea
-						id="content"
+						id="note-content"
+						name="content"
+						defaultValue={note.content}
+						required
+						maxLength={10000}
 						aria-invalid={contentHasErrors || undefined}
 						aria-describedby={contentErrorId}
-						{...register('content')}
 					/>
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList errors={[errors.content?.message]} />
+						<ErrorList
+							id={contentErrorId}
+							errors={state?.fieldErrors?.content}
+						/>
 					</div>
 				</div>
 
@@ -105,7 +104,7 @@ export default function EditForm({
 
 				<div>
 					<Label>Image</Label>
-					<ImageChooser image={note.images[1]} />
+					<ImageChooser image={note.images[0]} />
 				</div>
 			</div>
 			<div className={floatingToolbarClassName}>
@@ -117,8 +116,10 @@ export default function EditForm({
 				</StatusButton>
 			</div>
 
-			<input type="hidden" required {...register('id')} />
-			<input type="hidden" required {...register('username')} />
+			<ErrorList id={formErrorId} errors={state?.formErrors} />
+
+			<input type="hidden" name="id" value={note.id} required />
+			<input type="hidden" name="username" value={params.username} required />
 		</form>
 	)
 }
@@ -211,7 +212,7 @@ function ErrorList({
 	errors,
 }: {
 	id?: string
-	errors?: Array<string | undefined> | null
+	errors?: Array<string> | null
 }) {
 	return errors?.length ? (
 		<ul id={id} className="flex flex-col gap-1">

@@ -6,7 +6,6 @@ import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
-import { NoteEditorSchema, ImageFieldsetSchema } from './schemas'
 
 export async function loadUserInfo() {
 	return { username: os.userInfo().username }
@@ -80,6 +79,32 @@ export async function removeNote(noteId: string, formData: FormData) {
 	redirect(`/users/${noteId}/notes`)
 }
 
+const titleMinLength = 1
+const titleMaxLength = 100
+const contentMinLength = 1
+const contentMaxLength = 10000
+
+const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
+
+const ImageFieldsetSchema = z.object({
+	imageId: z.string().optional(),
+	file: z
+		.instanceof(File)
+		.optional()
+		.refine(file => {
+			return !file || file.size <= MAX_UPLOAD_SIZE
+		}, 'File size must be less than 3MB'),
+	altText: z.string().optional(),
+})
+
+const NoteEditorSchema = z.object({
+	id: z.string().min(1),
+	title: z.string().min(titleMinLength).max(titleMaxLength),
+	content: z.string().min(contentMinLength).max(contentMaxLength),
+	images: z.array(ImageFieldsetSchema).max(5).optional(),
+	username: z.string().min(1),
+})
+
 export async function editNote(_prevState: unknown, formData: FormData) {
 	console.log('form action fired')
 
@@ -94,6 +119,8 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 				altText: formData.get('altText'),
 			},
 		],
+
+		username: formData.get('username'),
 	}
 
 	console.log(data)
@@ -109,7 +136,7 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		}
 	}
 
-	const { id, title, content, images } = validatedFields.data
+	const { id, title, content, images, username } = validatedFields.data
 
 	await updateNote({
 		id,
@@ -117,10 +144,6 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		content,
 		images: images?.map(({ imageId, ...rest }) => ({ id: imageId, ...rest })),
 	})
-
-	const username = formData.get('username')
-
-	invariant(username, `No user with the username ${username} exists`)
 
 	revalidatePath(`/users/${username}/notes/${id}/edit`)
 }
