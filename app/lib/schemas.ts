@@ -1,4 +1,4 @@
-import * as z from 'zod'
+import { z } from 'zod'
 
 const titleMinLength = 1
 const titleMaxLength = 100
@@ -23,5 +23,8 @@ export const NoteEditorSchema = z.object({
 	title: z.string().min(titleMinLength).max(titleMaxLength),
 	content: z.string().min(contentMinLength).max(contentMaxLength),
 	images: z.array(ImageFieldsetSchema).max(5).optional(),
-	username: z.string(),
 })
+
+export type Image = z.infer<typeof ImageFieldsetSchema>
+
+export type Note = z.infer<typeof NoteEditorSchema>

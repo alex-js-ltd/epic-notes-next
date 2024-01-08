@@ -69,14 +69,17 @@ export async function loadNote(noteId: string) {
 	}
 }
 
-export async function removeNote(noteId: string, formData: FormData) {
+export async function removeNote(
+	{ noteId, username }: { noteId: string; username: string },
+	formData: FormData,
+) {
 	const intent = formData.get('intent')
 
 	invariant(intent === 'delete', 'Invalid intent')
 
 	db.note.delete({ where: { id: { equals: noteId } } })
 
-	redirect(`/users/${noteId}/notes`)
+	redirect(`/users/${username}/notes`)
 }
 
 function getImages(formData: FormData) {
@@ -99,10 +102,7 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		title: formData.get('title'),
 		content: formData.get('content'),
 		images: [...getImages(formData)],
-		username: formData.get('username'),
 	}
-
-	console.log(data)
 
 	const validatedFields = NoteEditorSchema.safeParse(data)
 
@@ -115,7 +115,9 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		}
 	}
 
-	const { id, title, content, images, username } = validatedFields.data
+	const { id, title, content, images } = validatedFields.data
+
+	console.log(validatedFields)
 
 	await updateNote({
 		id,
@@ -124,5 +126,9 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		images,
 	})
 
+	const username = formData.get('username')
+
 	revalidatePath(`/users/${username}/notes/${id}/edit`)
+	revalidatePath(`/users/${username}/notes/${id}`)
+	redirect(`/users/${username}/notes/${id}`)
 }

@@ -10,28 +10,16 @@ import { Input } from '@/app/comps/ui/input'
 import { Textarea } from '@/app/comps/ui/textarea'
 import { StatusButton } from '@/app/comps/ui/status-button'
 import { editNote } from '@/app/lib/actions'
-import { useFocusInvalid, useHydrated } from '../lib/hooks'
-import { cn } from '../lib/misc'
+import { useFocusInvalid, useHydrated } from '@/app/lib/hooks'
+import { cn } from '@/app/lib/misc'
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { NoteEditorSchema } from '../lib/schemas'
+import { NoteEditorSchema } from '@/app/lib/schemas'
 
-export default function EditForm({
-	note,
-}: {
-	note: {
-		id: string
-		title: string
-		content: string
-		images: Array<{
-			id: string
-			altText: string | undefined
-			file: File | undefined
-		}>
-	}
-}) {
+import type { Note, Image } from '@/app/lib/schemas'
+
+export default function EditForm({ note }: { note: Note }) {
 	const formId = 'note-editor'
 
 	const formRef = useRef<HTMLFormElement>(null)
@@ -42,7 +30,7 @@ export default function EditForm({
 
 	const [state, formAction] = useFormState(editNote, null)
 
-	const { register } = useForm<z.infer<typeof NoteEditorSchema>>({
+	const { register } = useForm<Note>({
 		progressive: true,
 		resolver: zodResolver(NoteEditorSchema),
 
@@ -50,8 +38,7 @@ export default function EditForm({
 			id: note.id,
 			title: note.title,
 			content: note.content,
-			images: note.images.length ? note.images : [{}],
-			username: params.username,
+			images: note.images ? note.images : [{}],
 		},
 	})
 
@@ -111,12 +98,7 @@ export default function EditForm({
 
 				<div>
 					<Label>Image</Label>
-					<ImageChooser image={note.images[0]} />
-				</div>
-
-				<div>
-					<Label>Image</Label>
-					<ImageChooser image={note.images[0]} />
+					<ImageChooser image={note.images && note.images[0]} />
 				</div>
 			</div>
 			<div className={floatingToolbarClassName}>
@@ -130,27 +112,13 @@ export default function EditForm({
 
 			<ErrorList id={formErrorId} errors={state?.formErrors} />
 
-			<input
-				type="hidden"
-				defaultValue={note.id}
-				required
-				{...register('id')}
-			/>
-			<input
-				type="hidden"
-				defaultValue={params.username}
-				required
-				{...register('username')}
-			/>
+			<input type="hidden" defaultValue={note.id} {...register('id')} />
+			<input type="hidden" name="username" defaultValue={params.username} />
 		</form>
 	)
 }
 
-function ImageChooser({
-	image,
-}: {
-	image?: { id: string; altText?: string | null }
-}) {
+function ImageChooser({ image }: { image?: Image }) {
 	const existingImage = Boolean(image)
 	const [previewImage, setPreviewImage] = useState<string | null>(
 		existingImage ? `/images/${image?.id}` : null,
@@ -188,9 +156,9 @@ function ImageChooser({
 									➕
 								</div>
 							)}
-							{existingImage ? (
-								<input name="imageId" type="hidden" value={image?.id} />
-							) : null}
+
+							<input name="imageId" type="hidden" value={image?.id} />
+
 							<input
 								id="image-input"
 								aria-label="Image"
