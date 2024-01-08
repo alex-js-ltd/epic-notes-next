@@ -10,118 +10,156 @@ import { Input } from '@/app/comps/ui/input'
 import { Textarea } from '@/app/comps/ui/textarea'
 import { StatusButton } from '@/app/comps/ui/status-button'
 import { editNote } from '@/app/lib/actions'
-import { useFocusInvalid, useHydrated } from '../lib/hooks'
-import { cn } from '../lib/misc'
+import { useFocusInvalid, useHydrated } from '@/app/lib/hooks'
+import { cn } from '@/app/lib/misc'
 
-import type { Note, Image } from '../lib/schemas'
+import { useForm, useFieldArray } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { NoteEditorSchema } from '@/app/lib/schemas'
+
+import type { Note, Image } from '@/app/lib/schemas'
+
+type State = ReturnType<typeof editNote>
+
+const initialState = {
+	fieldErrors: {},
+	formErrors: [],
+}
 
 export default function EditForm({ note }: { note: Note }) {
+	const formId = 'note-editor'
+
 	const formRef = useRef<HTMLFormElement>(null)
 
 	const params = useParams<{ noteId: string; username: string }>()
 
-	const [state, formAction] = useFormState(editNote, null)
-
-	const formId = 'note-editor'
-
-	const formHasErrors = Boolean(state?.formErrors?.length)
-	const formErrorId = formHasErrors ? 'form-error' : undefined
-	const titleHasErrors = Boolean(state?.fieldErrors?.title?.length)
-	const titleErrorId = titleHasErrors ? 'title-error' : undefined
-	const contentHasErrors = Boolean(state?.fieldErrors?.content?.length)
-	const contentErrorId = contentHasErrors ? 'content-error' : undefined
-
 	const isHydrated = useHydrated()
+
+	const [{ fieldErrors, formErrors }, formAction] = useFormState<
+		State,
+		FormData
+	>(editNote, initialState)
+
+	const { register, control } = useForm<Note>({
+		progressive: true,
+		resolver: zodResolver(NoteEditorSchema),
+
+		defaultValues: {
+			id: note.id,
+			title: note.title,
+			content: note.content,
+			images: note.images?.length ? note.images : [{}],
+		},
+	})
+
+	const {
+		fields: imageList,
+		append,
+		remove,
+	} = useFieldArray({
+		control,
+		name: 'images',
+		keyName: 'key',
+	})
+
+	/**
+	 * Get form errors from useFormState.
+	 * This improves progressive enhancement.
+	 */
+
+	const formHasErrors = Boolean(formErrors?.length)
+	const formErrorId = formHasErrors ? 'form-error' : undefined
+	const titleHasErrors = Boolean(fieldErrors?.title?.length)
+	const titleErrorId = titleHasErrors ? 'title-error' : undefined
+	const contentHasErrors = Boolean(fieldErrors?.content?.length)
+	const contentErrorId = contentHasErrors ? 'content-error' : undefined
 
 	useFocusInvalid(formRef.current, formHasErrors)
 
-	const images =
-		note?.images?.map((image, index) => ({
-			...image,
-			key: index,
-		})) ?? []
-
-	const imageList = [...images, {}]
-
 	return (
-		<form
-			id={formId}
-			noValidate={isHydrated}
-			className="flex h-full flex-col gap-y-4 overflow-x-hidden px-10 pb-28 pt-12"
-			action={formAction}
-			aria-invalid={formHasErrors || undefined}
-			aria-describedby={formErrorId}
-			ref={formRef}
-			tabIndex={-1}
-		>
-			<div className="flex flex-col gap-1">
-				<div>
-					<Label htmlFor="note-title">Title</Label>
-					<Input
-						id="note-title"
-						name="title"
-						defaultValue={note.title}
-						maxLength={100}
-						required
-						aria-invalid={titleHasErrors || undefined}
-						aria-describedby={titleErrorId}
-						autoFocus
-					/>
-
-					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList id={titleErrorId} errors={state?.fieldErrors?.title} />
-					</div>
-				</div>
-				<div>
-					<Label htmlFor="note-content">Content</Label>
-					<Textarea
-						id="note-content"
-						name="content"
-						defaultValue={note.content}
-						required
-						maxLength={10000}
-						aria-invalid={contentHasErrors || undefined}
-						aria-describedby={contentErrorId}
-					/>
-					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList
-							id={contentErrorId}
-							errors={state?.fieldErrors?.content}
+		<div className="absolute inset-0">
+			<form
+				id={formId}
+				noValidate={isHydrated}
+				className="flex h-full flex-col gap-y-4 overflow-x-hidden px-10 pb-28 pt-12"
+				action={formAction}
+				ref={formRef}
+			>
+				{/*
+					This hidden submit button is here to ensure that when the user hits
+					"enter" on an input field, the primary form function is submitted
+					rather than the first button in the form (which is delete/add image).
+				*/}
+				<button type="submit" className="hidden" />
+				<div className="flex flex-col gap-1">
+					<div>
+						<Label htmlFor="note-title">Title</Label>
+						<Input
+							id="note-title"
+							defaultValue={note.title}
+							aria-invalid={titleHasErrors || undefined}
+							aria-describedby={titleErrorId}
+							{...register('title')}
 						/>
+
+						<div className="min-h-[32px] px-4 pb-3 pt-1">
+							<ErrorList id={titleErrorId} errors={fieldErrors.title} />
+						</div>
 					</div>
+
+					<div>
+						<Label htmlFor="note-content">Content</Label>
+						<Textarea
+							id="note-content"
+							defaultValue={note.content}
+							aria-invalid={contentHasErrors || undefined}
+							aria-describedby={contentErrorId}
+							{...register('content')}
+						/>
+						<div className="min-h-[32px] px-4 pb-3 pt-1">
+							<ErrorList id={contentErrorId} errors={fieldErrors?.content} />
+						</div>
+					</div>
+
+					<div>
+						<Label>Images</Label>
+						<ul className="flex flex-col gap-4">
+							{imageList.map((image, index) => (
+								<li
+									key={image.key}
+									className="relative border-b-2 border-muted-foreground"
+								>
+									<button
+										className="text-foreground-destructive absolute right-0 top-0"
+										onClick={() => remove(index)}
+									>
+										<span aria-hidden>❌</span>{' '}
+										<span className="sr-only">Remove image {index + 1}</span>
+									</button>
+									<ImageChooser image={image} />
+								</li>
+							))}
+						</ul>
+					</div>
+
+					<Button type="button" className="mt-3" onClick={() => append({})}>
+						<span aria-hidden>➕ Image</span>{' '}
+						<span className="sr-only">Add image</span>
+					</Button>
 				</div>
-				<div>
-					<Label>Images</Label>
-					<ul className="flex flex-col gap-4">
-						{imageList?.map((image, index) => (
-							<li
-								key={index}
-								className="relative border-b-2 border-muted-foreground"
-							>
-								<button className="text-foreground-destructive absolute right-0 top-0">
-									<span aria-hidden>❌</span>{' '}
-									<span className="sr-only">Remove image {index + 1}</span>
-								</button>
-								<ImageChooser image={image} />
-							</li>
-						))}
-					</ul>
-				</div>
-			</div>
+				<ErrorList id={formErrorId} errors={formErrors} />
+				<input type="hidden" defaultValue={note.id} {...register('id')} />
+				<input type="hidden" name="username" defaultValue={params.username} />
+			</form>
 			<div className={floatingToolbarClassName}>
 				<Button form={formId} variant="destructive" type="reset">
 					Reset
 				</Button>
-				<StatusButton type="submit" disabled={false}>
+				<StatusButton form={formId} type="submit">
 					Submit
 				</StatusButton>
 			</div>
-
-			<ErrorList id={formErrorId} errors={state?.formErrors} />
-
-			<input type="hidden" name="id" value={note.id} required />
-			<input type="hidden" name="username" value={params.username} required />
-		</form>
+		</div>
 	)
 }
 
@@ -163,11 +201,10 @@ function ImageChooser({ image }: { image?: Image }) {
 									➕
 								</div>
 							)}
-
-							<input name="imageId" type="hidden" value={image?.id} />
-
+							{previewImage ? (
+								<input name="imageId" type="hidden" value={image?.id} />
+							) : null}
 							<input
-								id="image-input"
 								aria-label="Image"
 								className="absolute left-0 top-0 z-0 h-32 w-32 cursor-pointer opacity-0"
 								onChange={event => {
@@ -189,6 +226,9 @@ function ImageChooser({ image }: { image?: Image }) {
 							/>
 						</label>
 					</div>
+					<div className="min-h-[32px] px-4 pb-3 pt-1">
+						{/* <ErrorList id={fields.file.errorId} errors={state?.} /> */}
+					</div>
 				</div>
 				<div className="flex-1">
 					<Label htmlFor="alt-text">Alt Text</Label>
@@ -198,7 +238,16 @@ function ImageChooser({ image }: { image?: Image }) {
 						defaultValue={altText}
 						onChange={e => setAltText(e.currentTarget.value)}
 					/>
+					<div className="min-h-[32px] px-4 pb-3 pt-1">
+						{/* <ErrorList
+							id={fields.altText.errorId}
+							errors={fields.altText.errors}
+						/> */}
+					</div>
 				</div>
+			</div>
+			<div className="min-h-[32px] px-4 pb-3 pt-1">
+				{/* <ErrorList id={config.errorId} errors={config.errors} /> */}
 			</div>
 		</fieldset>
 	)
@@ -209,7 +258,7 @@ function ErrorList({
 	errors,
 }: {
 	id?: string
-	errors?: Array<string> | null
+	errors?: Array<string | undefined> | null
 }) {
 	return errors?.length ? (
 		<ul id={id} className="flex flex-col gap-1">
