@@ -13,7 +13,7 @@ import { editNote } from '@/app/lib/actions'
 import { useFocusInvalid, useHydrated } from '@/app/lib/hooks'
 import { cn } from '@/app/lib/misc'
 
-import { useForm } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { NoteEditorSchema } from '@/app/lib/schemas'
 
@@ -30,7 +30,7 @@ export default function EditForm({ note }: { note: Note }) {
 
 	const [state, formAction] = useFormState(editNote, null)
 
-	const { register } = useForm<Note>({
+	const { register, control } = useForm<Note>({
 		progressive: true,
 		resolver: zodResolver(NoteEditorSchema),
 
@@ -40,6 +40,12 @@ export default function EditForm({ note }: { note: Note }) {
 			content: note.content,
 			images: note.images ? note.images : [{}],
 		},
+	})
+
+	const { fields, append, remove } = useFieldArray({
+		control, // control props comes from useForm (optional: if you are using FormContext)
+		name: 'images', // unique name for your Field Array
+		keyName: 'key',
 	})
 
 	/**
@@ -97,9 +103,29 @@ export default function EditForm({ note }: { note: Note }) {
 				</div>
 
 				<div>
-					<Label>Image</Label>
-					<ImageChooser image={note.images && note.images[0]} />
+					<Label>Images</Label>
+					<ul className="flex flex-col gap-4">
+						{fields.map((image, index) => (
+							<li
+								key={image.key}
+								className="relative border-b-2 border-muted-foreground"
+							>
+								<button
+									className="text-foreground-destructive absolute right-0 top-0"
+									onClick={() => remove(index)}
+								>
+									<span aria-hidden>❌</span>{' '}
+									<span className="sr-only">Remove image {index + 1}</span>
+								</button>
+								<ImageChooser image={image} />
+							</li>
+						))}
+					</ul>
 				</div>
+				<Button type="button" className="mt-3" onClick={() => append({})}>
+					<span aria-hidden>➕ Image</span>{' '}
+					<span className="sr-only">Add image</span>
+				</Button>
 			</div>
 			<div className={floatingToolbarClassName}>
 				<Button form={formId} variant="destructive" type="reset">
@@ -119,7 +145,7 @@ export default function EditForm({ note }: { note: Note }) {
 }
 
 function ImageChooser({ image }: { image?: Image }) {
-	const existingImage = Boolean(image)
+	const existingImage = Boolean(image?.id)
 	const [previewImage, setPreviewImage] = useState<string | null>(
 		existingImage ? `/images/${image?.id}` : null,
 	)

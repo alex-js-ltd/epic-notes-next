@@ -105,10 +105,10 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	}
 
 	const validatedFields = NoteEditorSchema.safeParse(data)
-
+	console.log(data)
 	// Return early if the form data is invalid
 	if (!validatedFields.success) {
-		console.log(validatedFields.error.flatten())
+		console.log(validatedFields.error.flatten().fieldErrors)
 		return {
 			fieldErrors: validatedFields.error.flatten().fieldErrors,
 			formErrors: validatedFields.error.flatten().formErrors,
@@ -116,8 +116,6 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	}
 
 	const { id, title, content, images } = validatedFields.data
-
-	console.log(validatedFields)
 
 	await updateNote({
 		id,
