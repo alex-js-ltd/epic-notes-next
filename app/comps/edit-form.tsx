@@ -27,7 +27,8 @@ export default function EditForm({
 		content: string
 		images: Array<{
 			id: string
-			altText: string | null
+			altText: string | undefined
+			file: File | undefined
 		}>
 	}
 }) {
@@ -52,16 +53,18 @@ export default function EditForm({
 
 	console.log('state', state)
 
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<z.infer<typeof NoteEditorSchema>>({
+	const { register } = useForm<z.infer<typeof NoteEditorSchema>>({
 		progressive: true,
 		resolver: zodResolver(NoteEditorSchema),
-	})
 
-	console.log('errors', errors)
+		defaultValues: {
+			id: note.id,
+			title: note.title,
+			content: note.content,
+			images: note.images.length ? note.images : [{}],
+			username: params.username,
+		},
+	})
 
 	return (
 		<form
@@ -69,32 +72,30 @@ export default function EditForm({
 			noValidate={isHydrated}
 			className="flex h-full flex-col gap-y-4 overflow-x-hidden px-10 pb-28 pt-12"
 			action={formAction}
-			aria-invalid={formHasErrors || undefined}
-			aria-describedby={formErrorId}
 			ref={formRef}
-			tabIndex={-1}
 		>
 			<div className="flex flex-col gap-1">
 				<div>
-					{/* 🦉 NOTE: this is not an accessible label, we'll get to that in the accessibility exercises */}
 					<Label htmlFor="note-title">Title</Label>
 					<Input
 						id="note-title"
-						value={note.title}
-						autoFocus
+						defaultValue={note.title}
+						aria-invalid={titleHasErrors || undefined}
+						aria-describedby={titleErrorId}
 						{...register('title')}
 					/>
 
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList id={titleErrorId} errors={state?.fieldErrors?.title} />
+						<ErrorList id={titleErrorId} errors={state?.fieldErrors.title} />
 					</div>
 				</div>
 				<div>
-					{/* 🦉 NOTE: this is not an accessible label, we'll get to that in the accessibility exercises */}
 					<Label htmlFor="note-content">Content</Label>
 					<Textarea
 						id="note-content"
-						value={note.content}
+						defaultValue={note.content}
+						aria-invalid={contentHasErrors || undefined}
+						aria-describedby={contentErrorId}
 						{...register('content')}
 					/>
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
@@ -126,10 +127,15 @@ export default function EditForm({
 
 			<ErrorList id={formErrorId} errors={state?.formErrors} />
 
-			<input type="hidden" value={note.id} required {...register('id')} />
 			<input
 				type="hidden"
-				value={params.username}
+				defaultValue={note.id}
+				required
+				{...register('id')}
+			/>
+			<input
+				type="hidden"
+				defaultValue={params.username}
 				required
 				{...register('username')}
 			/>
@@ -225,7 +231,7 @@ function ErrorList({
 	errors,
 }: {
 	id?: string
-	errors?: Array<string> | null
+	errors?: Array<string | undefined> | null
 }) {
 	return errors?.length ? (
 		<ul id={id} className="flex flex-col gap-1">

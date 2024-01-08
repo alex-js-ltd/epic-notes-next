@@ -8,7 +8,7 @@ const contentMaxLength = 10000
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
 
 export const ImageFieldsetSchema = z.object({
-	imageId: z.string().optional(),
+	id: z.string().optional(),
 	file: z
 		.instanceof(File)
 		.optional()
