@@ -13,7 +13,7 @@ import { editNote } from '@/app/lib/actions'
 import { useFocusInvalid, useHydrated } from '../lib/hooks'
 import { cn } from '../lib/misc'
 
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { NoteEditorSchema } from '../lib/schemas'
@@ -32,26 +32,15 @@ export default function EditForm({
 		}>
 	}
 }) {
+	const formId = 'note-editor'
+
 	const formRef = useRef<HTMLFormElement>(null)
 
 	const params = useParams<{ noteId: string; username: string }>()
 
-	const [state, formAction] = useFormState(editNote, null)
-
-	const formId = 'note-editor'
-
-	const formHasErrors = Boolean(state?.formErrors?.length)
-	const formErrorId = formHasErrors ? 'form-error' : undefined
-	const titleHasErrors = Boolean(state?.fieldErrors?.title?.length)
-	const titleErrorId = titleHasErrors ? 'title-error' : undefined
-	const contentHasErrors = Boolean(state?.fieldErrors?.content?.length)
-	const contentErrorId = contentHasErrors ? 'content-error' : undefined
-
 	const isHydrated = useHydrated()
 
-	useFocusInvalid(formRef.current, formHasErrors)
-
-	console.log('state', state)
+	const [state, formAction] = useFormState(editNote, null)
 
 	const { register } = useForm<z.infer<typeof NoteEditorSchema>>({
 		progressive: true,
@@ -65,6 +54,20 @@ export default function EditForm({
 			username: params.username,
 		},
 	})
+
+	/**
+	 * Get form errors from useFormState.
+	 * This improves progressive enhancement.
+	 */
+
+	const formHasErrors = Boolean(state?.formErrors?.length)
+	const formErrorId = formHasErrors ? 'form-error' : undefined
+	const titleHasErrors = Boolean(state?.fieldErrors?.title?.length)
+	const titleErrorId = titleHasErrors ? 'title-error' : undefined
+	const contentHasErrors = Boolean(state?.fieldErrors?.content?.length)
+	const contentErrorId = contentHasErrors ? 'content-error' : undefined
+
+	useFocusInvalid(formRef.current, formHasErrors)
 
 	return (
 		<form
