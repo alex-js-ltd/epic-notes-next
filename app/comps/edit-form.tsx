@@ -38,7 +38,7 @@ export default function EditForm({ note }: { note: Note }) {
 			id: note.id,
 			title: note.title,
 			content: note.content,
-			images: note.images ? note.images : [{}],
+			images: note.images ? [...note.images] : [{}],
 		},
 	})
 
