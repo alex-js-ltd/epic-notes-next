@@ -8,7 +8,7 @@ const contentMaxLength = 10000
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
 
 export const ImageFieldsetSchema = z.object({
-	imageId: z.string().optional(),
+	id: z.string().optional(),
 	file: z
 		.instanceof(File)
 		.optional()
@@ -24,3 +24,7 @@ export const NoteEditorSchema = z.object({
 	content: z.string().min(contentMinLength).max(contentMaxLength),
 	images: z.array(ImageFieldsetSchema).max(5).optional(),
 })
+
+export type Image = z.infer<typeof ImageFieldsetSchema>
+
+export type Note = z.infer<typeof NoteEditorSchema>

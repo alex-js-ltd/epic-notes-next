@@ -5,7 +5,7 @@ import { db, updateNote } from '@/app/lib/db.server'
 import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import { z } from 'zod'
+import { NoteEditorSchema } from './schemas'
 
 export async function loadUserInfo() {
 	return { username: os.userInfo().username }
@@ -82,32 +82,6 @@ export async function removeNote(
 	redirect(`/users/${username}/notes`)
 }
 
-const titleMinLength = 1
-const titleMaxLength = 100
-const contentMinLength = 1
-const contentMaxLength = 10000
-
-const MAX_UPLOAD_SIZE = 1024 * 1024 * 3 // 3MB
-
-const ImageFieldsetSchema = z.object({
-	id: z.string().optional(),
-	file: z
-		.instanceof(File)
-		.optional()
-		.refine(file => {
-			return !file || file.size <= MAX_UPLOAD_SIZE
-		}, 'File size must be less than 3MB'),
-	altText: z.string().optional(),
-})
-
-const NoteEditorSchema = z.object({
-	id: z.string().min(1),
-	title: z.string().min(titleMinLength).max(titleMaxLength),
-	content: z.string().min(contentMinLength).max(contentMaxLength),
-	images: z.array(ImageFieldsetSchema).max(5).optional(),
-	username: z.string().min(1),
-})
-
 function getImages(formData: FormData) {
 	const imageIds = formData.getAll('imageId')
 	const files = formData.getAll('file')
@@ -128,7 +102,6 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		title: formData.get('title'),
 		content: formData.get('content'),
 		images: [...getImages(formData)],
-		username: formData.get('username'),
 	}
 
 	const validatedFields = NoteEditorSchema.safeParse(data)
@@ -142,7 +115,7 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		}
 	}
 
-	const { id, title, content, images, username } = validatedFields.data
+	const { id, title, content, images } = validatedFields.data
 
 	await updateNote({
 		id,
@@ -150,6 +123,8 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		content,
 		images,
 	})
+
+	const username = formData.get('username')
 
 	revalidatePath(`/users/${username}/notes/${id}/edit`)
 	revalidatePath(`/users/${username}/notes/${id}`)

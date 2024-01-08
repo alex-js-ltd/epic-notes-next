@@ -13,19 +13,9 @@ import { editNote } from '@/app/lib/actions'
 import { useFocusInvalid, useHydrated } from '../lib/hooks'
 import { cn } from '../lib/misc'
 
-export default function EditForm({
-	note,
-}: {
-	note: {
-		id: string
-		title: string
-		content: string
-		images: Array<{
-			id: string
-			altText: string | null
-		}>
-	}
-}) {
+import type { Note, Image } from '../lib/schemas'
+
+export default function EditForm({ note }: { note: Note }) {
 	const formRef = useRef<HTMLFormElement>(null)
 
 	const params = useParams<{ noteId: string; username: string }>()
@@ -45,6 +35,14 @@ export default function EditForm({
 
 	useFocusInvalid(formRef.current, formHasErrors)
 
+	const images =
+		note?.images?.map((image, index) => ({
+			...image,
+			key: index,
+		})) ?? []
+
+	const imageList = [...images, {}]
+
 	return (
 		<form
 			id={formId}
@@ -58,7 +56,6 @@ export default function EditForm({
 		>
 			<div className="flex flex-col gap-1">
 				<div>
-					{/* 🦉 NOTE: this is not an accessible label, we'll get to that in the accessibility exercises */}
 					<Label htmlFor="note-title">Title</Label>
 					<Input
 						id="note-title"
@@ -76,7 +73,6 @@ export default function EditForm({
 					</div>
 				</div>
 				<div>
-					{/* 🦉 NOTE: this is not an accessible label, we'll get to that in the accessibility exercises */}
 					<Label htmlFor="note-content">Content</Label>
 					<Textarea
 						id="note-content"
@@ -94,15 +90,22 @@ export default function EditForm({
 						/>
 					</div>
 				</div>
-
 				<div>
-					<Label>Image</Label>
-					<ImageChooser image={note.images[0]} />
-				</div>
-
-				<div>
-					<Label>Image</Label>
-					<ImageChooser image={note.images[1]} />
+					<Label>Images</Label>
+					<ul className="flex flex-col gap-4">
+						{imageList?.map((image, index) => (
+							<li
+								key={index}
+								className="relative border-b-2 border-muted-foreground"
+							>
+								<button className="text-foreground-destructive absolute right-0 top-0">
+									<span aria-hidden>❌</span>{' '}
+									<span className="sr-only">Remove image {index + 1}</span>
+								</button>
+								<ImageChooser image={image} />
+							</li>
+						))}
+					</ul>
 				</div>
 			</div>
 			<div className={floatingToolbarClassName}>
@@ -122,12 +125,8 @@ export default function EditForm({
 	)
 }
 
-function ImageChooser({
-	image,
-}: {
-	image?: { id: string; altText?: string | null }
-}) {
-	const existingImage = Boolean(image)
+function ImageChooser({ image }: { image?: Image }) {
+	const existingImage = Boolean(image?.id)
 	const [previewImage, setPreviewImage] = useState<string | null>(
 		existingImage ? `/api/images/${image?.id}` : null,
 	)
