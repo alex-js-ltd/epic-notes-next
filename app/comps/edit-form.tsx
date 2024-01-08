@@ -38,11 +38,15 @@ export default function EditForm({ note }: { note: Note }) {
 			id: note.id,
 			title: note.title,
 			content: note.content,
-			images: note.images ? [...note.images] : [{}],
+			images: note.images?.length ? note.images : [{}],
 		},
 	})
 
-	const { fields, append, remove } = useFieldArray({
+	const {
+		fields: imageList,
+		append,
+		remove,
+	} = useFieldArray({
 		control,
 		name: 'images',
 		keyName: 'key',
@@ -55,6 +59,7 @@ export default function EditForm({ note }: { note: Note }) {
 
 	const formHasErrors = Boolean(state?.formErrors?.length)
 	const formErrorId = formHasErrors ? 'form-error' : undefined
+
 	const titleHasErrors = Boolean(state?.fieldErrors?.title?.length)
 	const titleErrorId = titleHasErrors ? 'title-error' : undefined
 	const contentHasErrors = Boolean(state?.fieldErrors?.content?.length)
@@ -113,7 +118,7 @@ export default function EditForm({ note }: { note: Note }) {
 					<div>
 						<Label>Images</Label>
 						<ul className="flex flex-col gap-4">
-							{fields.map((image, index) => (
+							{imageList.map((image, index) => (
 								<li
 									key={image.key}
 									className="relative border-b-2 border-muted-foreground"
@@ -151,6 +156,7 @@ export default function EditForm({ note }: { note: Note }) {
 		</div>
 	)
 }
+
 function ImageChooser({ image }: { image?: Image }) {
 	const existingImage = Boolean(image?.id)
 	const [previewImage, setPreviewImage] = useState<string | null>(
@@ -189,13 +195,10 @@ function ImageChooser({ image }: { image?: Image }) {
 									➕
 								</div>
 							)}
-
 							{previewImage ? (
 								<input name="imageId" type="hidden" value={image?.id} />
 							) : null}
-
 							<input
-								id="image-input"
 								aria-label="Image"
 								className="absolute left-0 top-0 z-0 h-32 w-32 cursor-pointer opacity-0"
 								onChange={event => {
@@ -217,6 +220,9 @@ function ImageChooser({ image }: { image?: Image }) {
 							/>
 						</label>
 					</div>
+					<div className="min-h-[32px] px-4 pb-3 pt-1">
+						{/* <ErrorList id={fields.file.errorId} errors={state?.} /> */}
+					</div>
 				</div>
 				<div className="flex-1">
 					<Label htmlFor="alt-text">Alt Text</Label>
@@ -226,7 +232,16 @@ function ImageChooser({ image }: { image?: Image }) {
 						defaultValue={altText}
 						onChange={e => setAltText(e.currentTarget.value)}
 					/>
+					<div className="min-h-[32px] px-4 pb-3 pt-1">
+						{/* <ErrorList
+							id={fields.altText.errorId}
+							errors={fields.altText.errors}
+						/> */}
+					</div>
 				</div>
+			</div>
+			<div className="min-h-[32px] px-4 pb-3 pt-1">
+				{/* <ErrorList id={config.errorId} errors={config.errors} /> */}
 			</div>
 		</fieldset>
 	)
