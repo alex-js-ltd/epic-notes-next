@@ -43,8 +43,8 @@ export default function EditForm({ note }: { note: Note }) {
 	})
 
 	const { fields, append, remove } = useFieldArray({
-		control, // control props comes from useForm (optional: if you are using FormContext)
-		name: 'images', // unique name for your Field Array
+		control,
+		name: 'images',
 		keyName: 'key',
 	})
 
@@ -63,87 +63,94 @@ export default function EditForm({ note }: { note: Note }) {
 	useFocusInvalid(formRef.current, formHasErrors)
 
 	return (
-		<form
-			id={formId}
-			noValidate={isHydrated}
-			className="flex h-full flex-col gap-y-4 overflow-x-hidden px-10 pb-28 pt-12"
-			action={formAction}
-			ref={formRef}
-		>
-			<div className="flex flex-col gap-1">
-				<div>
-					<Label htmlFor="note-title">Title</Label>
-					<Input
-						id="note-title"
-						defaultValue={note.title}
-						aria-invalid={titleHasErrors || undefined}
-						aria-describedby={titleErrorId}
-						{...register('title')}
-					/>
-
-					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList id={titleErrorId} errors={state?.fieldErrors.title} />
-					</div>
-				</div>
-				<div>
-					<Label htmlFor="note-content">Content</Label>
-					<Textarea
-						id="note-content"
-						defaultValue={note.content}
-						aria-invalid={contentHasErrors || undefined}
-						aria-describedby={contentErrorId}
-						{...register('content')}
-					/>
-					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						<ErrorList
-							id={contentErrorId}
-							errors={state?.fieldErrors?.content}
+		<div className="absolute inset-0">
+			<form
+				id={formId}
+				noValidate={isHydrated}
+				className="flex h-full flex-col gap-y-4 overflow-x-hidden px-10 pb-28 pt-12"
+				action={formAction}
+				ref={formRef}
+			>
+				{/*
+					This hidden submit button is here to ensure that when the user hits
+					"enter" on an input field, the primary form function is submitted
+					rather than the first button in the form (which is delete/add image).
+				*/}
+				<button type="submit" className="hidden" />
+				<div className="flex flex-col gap-1">
+					<div>
+						<Label htmlFor="note-title">Title</Label>
+						<Input
+							id="note-title"
+							defaultValue={note.title}
+							aria-invalid={titleHasErrors || undefined}
+							aria-describedby={titleErrorId}
+							{...register('title')}
 						/>
-					</div>
-				</div>
 
-				<div>
-					<Label>Images</Label>
-					<ul className="flex flex-col gap-4">
-						{fields.map((image, index) => (
-							<li
-								key={image.key}
-								className="relative border-b-2 border-muted-foreground"
-							>
-								<button
-									className="text-foreground-destructive absolute right-0 top-0"
-									onClick={() => remove(index)}
+						<div className="min-h-[32px] px-4 pb-3 pt-1">
+							<ErrorList id={titleErrorId} errors={state?.fieldErrors.title} />
+						</div>
+					</div>
+
+					<div>
+						<Label htmlFor="note-content">Content</Label>
+						<Textarea
+							id="note-content"
+							defaultValue={note.content}
+							aria-invalid={contentHasErrors || undefined}
+							aria-describedby={contentErrorId}
+							{...register('content')}
+						/>
+						<div className="min-h-[32px] px-4 pb-3 pt-1">
+							<ErrorList
+								id={contentErrorId}
+								errors={state?.fieldErrors?.content}
+							/>
+						</div>
+					</div>
+
+					<div>
+						<Label>Images</Label>
+						<ul className="flex flex-col gap-4">
+							{fields.map((image, index) => (
+								<li
+									key={image.key}
+									className="relative border-b-2 border-muted-foreground"
 								>
-									<span aria-hidden>❌</span>{' '}
-									<span className="sr-only">Remove image {index + 1}</span>
-								</button>
-								<ImageChooser image={image} />
-							</li>
-						))}
-					</ul>
+									<button
+										className="text-foreground-destructive absolute right-0 top-0"
+										onClick={() => remove(index)}
+									>
+										<span aria-hidden>❌</span>{' '}
+										<span className="sr-only">Remove image {index + 1}</span>
+									</button>
+									<ImageChooser image={image} />
+								</li>
+							))}
+						</ul>
+					</div>
+
+					<Button type="button" className="mt-3" onClick={() => append({})}>
+						<span aria-hidden>➕ Image</span>{' '}
+						<span className="sr-only">Add image</span>
+					</Button>
 				</div>
-				<Button type="button" className="mt-3" onClick={() => append({})}>
-					<span aria-hidden>➕ Image</span>{' '}
-					<span className="sr-only">Add image</span>
-				</Button>
-			</div>
+				<ErrorList id={formErrorId} errors={state?.formErrors} />
+				<input type="hidden" defaultValue={note.id} {...register('id')} />
+				<input type="hidden" name="username" defaultValue={params.username} />
+			</form>
 			<div className={floatingToolbarClassName}>
 				<Button form={formId} variant="destructive" type="reset">
 					Reset
 				</Button>
-				<StatusButton type="submit" disabled={false}>
+				<StatusButton form={formId} type="submit">
 					Submit
 				</StatusButton>
 			</div>
-
-			<ErrorList id={formErrorId} errors={state?.formErrors} />
-
-			<input type="hidden" defaultValue={note.id} {...register('id')} />
-			<input type="hidden" name="username" defaultValue={params.username} />
-		</form>
+		</div>
 	)
 }
-
 function ImageChooser({ image }: { image?: Image }) {
 	const existingImage = Boolean(image?.id)
 	const [previewImage, setPreviewImage] = useState<string | null>(
