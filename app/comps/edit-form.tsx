@@ -19,6 +19,13 @@ import { NoteEditorSchema } from '@/app/lib/schemas'
 
 import type { Note, Image } from '@/app/lib/schemas'
 
+type State = ReturnType<typeof editNote>
+
+const initialState = {
+	fieldErrors: {},
+	formErrors: [],
+}
+
 export default function EditForm({ note }: { note: Note }) {
 	const formId = 'note-editor'
 
@@ -28,7 +35,10 @@ export default function EditForm({ note }: { note: Note }) {
 
 	const isHydrated = useHydrated()
 
-	const [state, formAction] = useFormState(editNote, null)
+	const [{ fieldErrors, formErrors }, formAction] = useFormState<
+		State,
+		FormData
+	>(editNote, initialState)
 
 	const { register, control } = useForm<Note>({
 		progressive: true,
@@ -57,12 +67,11 @@ export default function EditForm({ note }: { note: Note }) {
 	 * This improves progressive enhancement.
 	 */
 
-	const formHasErrors = Boolean(state?.formErrors?.length)
+	const formHasErrors = Boolean(formErrors?.length)
 	const formErrorId = formHasErrors ? 'form-error' : undefined
-
-	const titleHasErrors = Boolean(state?.fieldErrors?.title?.length)
+	const titleHasErrors = Boolean(fieldErrors?.title?.length)
 	const titleErrorId = titleHasErrors ? 'title-error' : undefined
-	const contentHasErrors = Boolean(state?.fieldErrors?.content?.length)
+	const contentHasErrors = Boolean(fieldErrors?.content?.length)
 	const contentErrorId = contentHasErrors ? 'content-error' : undefined
 
 	useFocusInvalid(formRef.current, formHasErrors)
@@ -94,7 +103,7 @@ export default function EditForm({ note }: { note: Note }) {
 						/>
 
 						<div className="min-h-[32px] px-4 pb-3 pt-1">
-							<ErrorList id={titleErrorId} errors={state?.fieldErrors.title} />
+							<ErrorList id={titleErrorId} errors={fieldErrors.title} />
 						</div>
 					</div>
 
@@ -108,10 +117,7 @@ export default function EditForm({ note }: { note: Note }) {
 							{...register('content')}
 						/>
 						<div className="min-h-[32px] px-4 pb-3 pt-1">
-							<ErrorList
-								id={contentErrorId}
-								errors={state?.fieldErrors?.content}
-							/>
+							<ErrorList id={contentErrorId} errors={fieldErrors?.content} />
 						</div>
 					</div>
 
@@ -141,7 +147,7 @@ export default function EditForm({ note }: { note: Note }) {
 						<span className="sr-only">Add image</span>
 					</Button>
 				</div>
-				<ErrorList id={formErrorId} errors={state?.formErrors} />
+				<ErrorList id={formErrorId} errors={formErrors} />
 				<input type="hidden" defaultValue={note.id} {...register('id')} />
 				<input type="hidden" name="username" defaultValue={params.username} />
 			</form>
