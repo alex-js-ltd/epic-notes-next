@@ -183,7 +183,9 @@ function ImageChooser({ image }: { image?: Image }) {
 								</div>
 							)}
 
-							<input name="imageId" type="hidden" value={image?.id} />
+							{previewImage ? (
+								<input name="imageId" type="hidden" value={image?.id} />
+							) : null}
 
 							<input
 								id="image-input"
