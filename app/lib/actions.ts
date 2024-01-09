@@ -6,6 +6,7 @@ import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { NoteEditorSchema } from './schemas'
+import { getFieldsetConstraint, parse } from '@conform-to/zod'
 
 export async function loadUserInfo() {
 	return { username: os.userInfo().username }
@@ -104,29 +105,24 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		images: [...getImages(formData)],
 	}
 
-	const validatedFields = NoteEditorSchema.safeParse(data)
-	console.log(data)
-	// Return early if the form data is invalid
-	if (!validatedFields.success) {
-		console.log(validatedFields.error.flatten().fieldErrors)
-		return {
-			fieldErrors: validatedFields.error.flatten().fieldErrors,
-			formErrors: validatedFields.error.flatten().formErrors,
-		}
+	const submission = parse(formData, {
+		schema: NoteEditorSchema,
+	})
+
+	if (!submission.value) {
+		console.log(submission)
+		return { status: 'error', error: submission?.error }
 	}
 
-	const { id, title, content, images } = validatedFields.data
-
-	await updateNote({
-		id,
-		title,
-		content,
-		images,
-	})
+	const { id, title, content, images } = submission.value
+	await updateNote({ id, title, content, images })
 
 	const username = formData.get('username')
 
 	revalidatePath(`/users/${username}/notes/${id}/edit`)
 	revalidatePath(`/users/${username}/notes/${id}`)
+
+	console.log('submission', submission)
+
 	redirect(`/users/${username}/notes/${id}`)
 }

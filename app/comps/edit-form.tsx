@@ -13,77 +13,65 @@ import { editNote } from '@/app/lib/actions'
 import { useFocusInvalid, useHydrated } from '@/app/lib/hooks'
 import { cn } from '@/app/lib/misc'
 
-import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { NoteEditorSchema } from '@/app/lib/schemas'
 
 import type { Note, Image } from '@/app/lib/schemas'
 
-type State = ReturnType<typeof editNote>
-
-const initialState = {
-	fieldErrors: {},
-	formErrors: [],
-}
+import {
+	conform,
+	list,
+	useFieldList,
+	useFieldset,
+	useForm,
+	type FieldConfig,
+} from '@conform-to/react'
+import { getFieldsetConstraint, parse } from '@conform-to/zod'
 
 export default function EditForm({ note }: { note: Note }) {
-	const formId = 'note-editor'
-
-	const formRef = useRef<HTMLFormElement>(null)
-
 	const params = useParams<{ noteId: string; username: string }>()
 
-	const isHydrated = useHydrated()
+	const [state, formAction] = useFormState(editNote, null)
 
-	const [{ fieldErrors, formErrors }, formAction] = useFormState<
-		State,
-		FormData
-	>(editNote, initialState)
-
-	const { register, control } = useForm<Note>({
-		progressive: true,
-		resolver: zodResolver(NoteEditorSchema),
-
-		defaultValues: {
+	const [form, fields] = useForm({
+		id: 'note-editor',
+		constraint: getFieldsetConstraint(NoteEditorSchema),
+		lastSubmission: undefined,
+		onValidate({ formData }) {
+			return parse(formData, { schema: NoteEditorSchema })
+		},
+		defaultValue: {
 			id: note.id,
+
 			title: note.title,
 			content: note.content,
-			images: note.images?.length ? note.images : [{}],
+			images: note?.images?.length ? note.images : [{}],
+		},
+
+		async onSubmit(event, { submission }) {
+			event.preventDefault()
+			// This will log `{ productId: 'rf23g43', intent: 'add-to-cart' }`
+			// or `{ productId: 'rf23g43', intent: 'buy-now' }`
+			console.log(submission.payload)
+
+			const res = await fetch(`/api/note/${note.id}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ payload: submission.payload }),
+			})
+
+			console.log(res)
 		},
 	})
-
-	const {
-		fields: imageList,
-		append,
-		remove,
-	} = useFieldArray({
-		control,
-		name: 'images',
-		keyName: 'key',
-	})
-
-	/**
-	 * Get form errors from useFormState.
-	 * This improves progressive enhancement.
-	 */
-
-	const formHasErrors = Boolean(formErrors?.length)
-	const formErrorId = formHasErrors ? 'form-error' : undefined
-	const titleHasErrors = Boolean(fieldErrors?.title?.length)
-	const titleErrorId = titleHasErrors ? 'title-error' : undefined
-	const contentHasErrors = Boolean(fieldErrors?.content?.length)
-	const contentErrorId = contentHasErrors ? 'content-error' : undefined
-
-	useFocusInvalid(formRef.current, formHasErrors)
+	const imageList = useFieldList(form.ref, fields.images)
 
 	return (
 		<div className="absolute inset-0">
 			<form
-				id={formId}
-				noValidate={isHydrated}
-				className="flex h-full flex-col gap-y-4 overflow-x-hidden px-10 pb-28 pt-12"
-				action={formAction}
-				ref={formRef}
+				className="flex h-full flex-col gap-y-4 overflow-y-auto overflow-x-hidden px-10 pb-28 pt-12"
+				{...form.props}
 			>
 				{/*
 					This hidden submit button is here to ensure that when the user hits
@@ -93,34 +81,25 @@ export default function EditForm({ note }: { note: Note }) {
 				<button type="submit" className="hidden" />
 				<div className="flex flex-col gap-1">
 					<div>
-						<Label htmlFor="note-title">Title</Label>
-						<Input
-							id="note-title"
-							defaultValue={note.title}
-							aria-invalid={titleHasErrors || undefined}
-							aria-describedby={titleErrorId}
-							{...register('title')}
-						/>
-
+						<Label htmlFor={fields.title.id}>Title</Label>
+						<Input autoFocus {...conform.input(fields.title)} />
 						<div className="min-h-[32px] px-4 pb-3 pt-1">
-							<ErrorList id={titleErrorId} errors={fieldErrors.title} />
+							<ErrorList
+								id={fields.title.errorId}
+								errors={fields.title.errors}
+							/>
 						</div>
 					</div>
-
 					<div>
-						<Label htmlFor="note-content">Content</Label>
-						<Textarea
-							id="note-content"
-							defaultValue={note.content}
-							aria-invalid={contentHasErrors || undefined}
-							aria-describedby={contentErrorId}
-							{...register('content')}
-						/>
+						<Label htmlFor={fields.content.id}>Content</Label>
+						<Textarea {...conform.textarea(fields.content)} />
 						<div className="min-h-[32px] px-4 pb-3 pt-1">
-							<ErrorList id={contentErrorId} errors={fieldErrors?.content} />
+							<ErrorList
+								id={fields.content.errorId}
+								errors={fields.content.errors}
+							/>
 						</div>
 					</div>
-
 					<div>
 						<Label>Images</Label>
 						<ul className="flex flex-col gap-4">
@@ -131,31 +110,34 @@ export default function EditForm({ note }: { note: Note }) {
 								>
 									<button
 										className="text-foreground-destructive absolute right-0 top-0"
-										onClick={() => remove(index)}
+										{...list.remove(fields.images.name, { index })}
 									>
 										<span aria-hidden>❌</span>{' '}
 										<span className="sr-only">Remove image {index + 1}</span>
 									</button>
-									<ImageChooser image={image} />
+									<ImageChooser config={image} />
 								</li>
 							))}
 						</ul>
 					</div>
-
-					<Button type="button" className="mt-3" onClick={() => append({})}>
+					<Button
+						className="mt-3"
+						{...list.insert(fields.images.name, { defaultValue: {} })}
+					>
 						<span aria-hidden>➕ Image</span>{' '}
 						<span className="sr-only">Add image</span>
 					</Button>
 				</div>
-				<ErrorList id={formErrorId} errors={formErrors} />
-				<input type="hidden" defaultValue={note.id} {...register('id')} />
-				<input type="hidden" name="username" defaultValue={params.username} />
+				<ErrorList id={form.errorId} errors={form.errors} />
+
+				<input type="hidden" {...conform.input(fields.id)} />
+				<input type="hidden" name="username" value={params.username} />
 			</form>
 			<div className={floatingToolbarClassName}>
-				<Button form={formId} variant="destructive" type="reset">
+				<Button form={form.id} variant="destructive" type="reset">
 					Reset
 				</Button>
-				<StatusButton form={formId} type="submit">
+				<StatusButton form={form.id} type="submit">
 					Submit
 				</StatusButton>
 			</div>
@@ -163,20 +145,22 @@ export default function EditForm({ note }: { note: Note }) {
 	)
 }
 
-function ImageChooser({ image }: { image?: Image }) {
-	const existingImage = Boolean(image?.id)
+function ImageChooser({ config }: { config: FieldConfig<Image> }) {
+	const ref = useRef<HTMLFieldSetElement>(null)
+	const fields = useFieldset(ref, config)
+	const existingImage = Boolean(fields.id.defaultValue)
 	const [previewImage, setPreviewImage] = useState<string | null>(
-		existingImage ? `/api/images/${image?.id}` : null,
+		existingImage ? `/api/images/${fields.id.defaultValue}` : null,
 	)
-	const [altText, setAltText] = useState(image?.altText ?? '')
+	const [altText, setAltText] = useState(fields.altText.defaultValue ?? '')
 
 	return (
-		<fieldset>
+		<fieldset ref={ref} {...conform.fieldset(config)}>
 			<div className="flex gap-3">
 				<div className="w-32">
 					<div className="relative h-32 w-32">
 						<label
-							htmlFor="image-input"
+							htmlFor={fields.file.id}
 							className={cn('group absolute h-32 w-32 rounded-lg', {
 								'bg-accent opacity-40 focus-within:opacity-100 hover:opacity-100':
 									!previewImage,
@@ -201,8 +185,12 @@ function ImageChooser({ image }: { image?: Image }) {
 									➕
 								</div>
 							)}
-							{previewImage ? (
-								<input name="imageId" type="hidden" value={image?.id} />
+							{existingImage ? (
+								<input
+									{...conform.input(fields.id, {
+										type: 'hidden',
+									})}
+								/>
 							) : null}
 							<input
 								aria-label="Image"
@@ -220,34 +208,33 @@ function ImageChooser({ image }: { image?: Image }) {
 										setPreviewImage(null)
 									}
 								}}
-								name="file"
-								type="file"
 								accept="image/*"
+								{...conform.input(fields.file, {
+									type: 'file',
+								})}
 							/>
 						</label>
 					</div>
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						{/* <ErrorList id={fields.file.errorId} errors={state?.} /> */}
+						<ErrorList id={fields.file.errorId} errors={fields.file.errors} />
 					</div>
 				</div>
 				<div className="flex-1">
-					<Label htmlFor="alt-text">Alt Text</Label>
+					<Label htmlFor={fields.altText.id}>Alt Text</Label>
 					<Textarea
-						id="alt-text"
-						name="altText"
-						defaultValue={altText}
 						onChange={e => setAltText(e.currentTarget.value)}
+						{...conform.textarea(fields.altText)}
 					/>
 					<div className="min-h-[32px] px-4 pb-3 pt-1">
-						{/* <ErrorList
+						<ErrorList
 							id={fields.altText.errorId}
 							errors={fields.altText.errors}
-						/> */}
+						/>
 					</div>
 				</div>
 			</div>
 			<div className="min-h-[32px] px-4 pb-3 pt-1">
-				{/* <ErrorList id={config.errorId} errors={config.errors} /> */}
+				<ErrorList id={config.errorId} errors={config.errors} />
 			</div>
 		</fieldset>
 	)
