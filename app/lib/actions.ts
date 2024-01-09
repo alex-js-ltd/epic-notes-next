@@ -84,8 +84,6 @@ export async function removeNote(
 }
 
 export async function editNote(_prevState: unknown, formData: FormData) {
-	console.log('form action fired')
-
 	const submission = parse(formData, {
 		schema: NoteEditorSchema,
 	})

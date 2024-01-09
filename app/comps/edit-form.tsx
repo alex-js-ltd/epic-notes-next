@@ -10,10 +10,7 @@ import { Input } from '@/app/comps/ui/input'
 import { Textarea } from '@/app/comps/ui/textarea'
 import { StatusButton } from '@/app/comps/ui/status-button'
 import { editNote } from '@/app/lib/actions'
-import { useFocusInvalid, useHydrated } from '@/app/lib/hooks'
 import { cn } from '@/app/lib/misc'
-
-import { zodResolver } from '@hookform/resolvers/zod'
 import { NoteEditorSchema } from '@/app/lib/schemas'
 
 import type { Note, Image } from '@/app/lib/schemas'
@@ -31,7 +28,7 @@ import { getFieldsetConstraint, parse } from '@conform-to/zod'
 export default function EditForm({ note }: { note: Note }) {
 	const params = useParams<{ noteId: string; username: string }>()
 
-	const [state, formAction] = useFormState(editNote, null)
+	const [_state, formAction] = useFormState(editNote, null)
 
 	const [form, fields] = useForm({
 		id: 'note-editor',

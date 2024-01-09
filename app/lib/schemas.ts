@@ -24,7 +24,7 @@ export const ImageFieldsetSchemaArray = z
 	.optional()
 
 export const NoteEditorSchema = z.object({
-	id: z.string(),
+	id: z.string().min(1),
 	title: z.string().min(titleMinLength).max(titleMaxLength),
 	content: z.string().min(contentMinLength).max(contentMaxLength),
 	images: ImageFieldsetSchemaArray,
