@@ -83,34 +83,14 @@ export async function removeNote(
 	redirect(`/users/${username}/notes`)
 }
 
-function getImages(formData: FormData) {
-	const imageIds = formData.getAll('imageId')
-	const files = formData.getAll('file')
-	const altTexts = formData.getAll('altText')
-
-	return imageIds.map((imageId, index) => ({
-		id: imageId,
-		file: files[index],
-		altText: altTexts[index],
-	}))
-}
-
 export async function editNote(_prevState: unknown, formData: FormData) {
 	console.log('form action fired')
-
-	const data = {
-		id: formData.get('id'),
-		title: formData.get('title'),
-		content: formData.get('content'),
-		images: [...getImages(formData)],
-	}
 
 	const submission = parse(formData, {
 		schema: NoteEditorSchema,
 	})
 
 	if (!submission.value) {
-		console.log(submission)
 		return { status: 'error', error: submission?.error }
 	}
 
@@ -119,10 +99,9 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 
 	const username = formData.get('username')
 
+	invariant(username, `No username exists`)
+
 	revalidatePath(`/users/${username}/notes/${id}/edit`)
 	revalidatePath(`/users/${username}/notes/${id}`)
-
-	console.log('submission', submission)
-
 	redirect(`/users/${username}/notes/${id}`)
 }

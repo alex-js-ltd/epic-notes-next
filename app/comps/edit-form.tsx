@@ -42,27 +42,13 @@ export default function EditForm({ note }: { note: Note }) {
 		},
 		defaultValue: {
 			id: note.id,
-
 			title: note.title,
 			content: note.content,
 			images: note?.images?.length ? note.images : [{}],
 		},
 
-		async onSubmit(event, { submission }) {
-			event.preventDefault()
-			// This will log `{ productId: 'rf23g43', intent: 'add-to-cart' }`
-			// or `{ productId: 'rf23g43', intent: 'buy-now' }`
-			console.log(submission.payload)
-
-			const res = await fetch(`/api/note/${note.id}`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ payload: submission.payload }),
-			})
-
-			console.log(res)
+		onSubmit(event, { submission }) {
+			// event.preventDefault()
 		},
 	})
 	const imageList = useFieldList(form.ref, fields.images)
@@ -72,6 +58,7 @@ export default function EditForm({ note }: { note: Note }) {
 			<form
 				className="flex h-full flex-col gap-y-4 overflow-y-auto overflow-x-hidden px-10 pb-28 pt-12"
 				{...form.props}
+				action={formAction}
 			>
 				{/*
 					This hidden submit button is here to ensure that when the user hits
