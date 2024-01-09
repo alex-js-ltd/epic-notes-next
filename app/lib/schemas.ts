@@ -18,16 +18,11 @@ export const ImageFieldsetSchema = z.object({
 	altText: z.string().optional(),
 })
 
-export const ImageFieldsetSchemaArray = z
-	.array(ImageFieldsetSchema)
-	.max(5)
-	.optional()
-
 export const NoteEditorSchema = z.object({
 	id: z.string().min(1),
 	title: z.string().min(titleMinLength).max(titleMaxLength),
 	content: z.string().min(contentMinLength).max(contentMaxLength),
-	images: ImageFieldsetSchemaArray,
+	images: z.array(ImageFieldsetSchema).max(5).optional(),
 })
 
 export type Image = z.infer<typeof ImageFieldsetSchema>
