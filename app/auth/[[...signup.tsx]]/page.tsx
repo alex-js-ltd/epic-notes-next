@@ -1,6 +1,7 @@
 import { Label } from '@/app/comps/ui/label'
 import { Input } from '@/app/comps/ui/input'
 import { Button } from '@/app/comps/ui/button'
+import { SignUp } from '@/app/lib/actions'
 import type { Metadata } from 'next'
 
 export default function SignupRoute() {
@@ -14,8 +15,8 @@ export default function SignupRoute() {
 					</p>
 				</div>
 				<form
-					method="POST"
 					className="mx-auto flex min-w-[368px] max-w-sm flex-col gap-4"
+					action={SignUp}
 				>
 					<div style={{ display: 'none' }} aria-hidden>
 						<label htmlFor="name-input">Please leave this field blank</label>

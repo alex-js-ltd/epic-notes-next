@@ -104,3 +104,9 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	revalidatePath(`/users/${username}/notes/${id}`)
 	redirect(`/users/${username}/notes/${id}`)
 }
+
+export async function SignUp(formData: FormData) {
+	invariant(!formData.get('name'), 'Form not submitted properly')
+	// implement signup later
+	return redirect('/')
+}
