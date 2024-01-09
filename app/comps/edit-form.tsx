@@ -13,7 +13,7 @@ import { editNote } from '@/app/lib/actions'
 import { cn } from '@/app/lib/misc'
 import { NoteEditorSchema } from '@/app/lib/schemas'
 
-import type { Note, Image } from '@/app/lib/schemas'
+import type { Note, ImageFieldset } from '@/app/lib/schemas'
 
 import {
 	conform,
@@ -129,7 +129,7 @@ export default function EditForm({ note }: { note: Note }) {
 	)
 }
 
-function ImageChooser({ config }: { config: FieldConfig<Image> }) {
+function ImageChooser({ config }: { config: FieldConfig<ImageFieldset> }) {
 	const ref = useRef<HTMLFieldSetElement>(null)
 	const fields = useFieldset(ref, config)
 	const existingImage = Boolean(fields.id.defaultValue)

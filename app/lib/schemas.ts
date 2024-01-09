@@ -25,6 +25,14 @@ export const NoteEditorSchema = z.object({
 	images: z.array(ImageFieldsetSchema).max(5).optional(),
 })
 
-export type Image = z.infer<typeof ImageFieldsetSchema>
+export type ImageFieldset = z.infer<typeof ImageFieldsetSchema>
 
-export type Note = z.infer<typeof NoteEditorSchema>
+export type Note = {
+	id: string
+	title: string
+	content: string
+	images: Array<{
+		id: string
+		altText: string | null
+	}>
+}
