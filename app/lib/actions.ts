@@ -6,8 +6,7 @@ import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { NoteEditorSchema } from './schemas'
-import { getFieldsetConstraint, parse } from '@conform-to/zod'
-import { Note } from './schemas'
+import { parse } from '@conform-to/zod'
 
 export async function loadUserInfo() {
 	return { username: os.userInfo().username }
