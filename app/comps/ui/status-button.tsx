@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { useFormStatus } from 'react-dom'
-import { cn } from '@/app/lib/misc'
+import { cn } from '@/app/utils/misc'
 import { Button, type ButtonProps } from './button'
 
 export const StatusButton = React.forwardRef<HTMLButtonElement, ButtonProps>(

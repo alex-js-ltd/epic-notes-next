@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react'
 import Link from 'next/link'
 import ActiveLink from '@/app/comps/ui/active-link'
-import { loadUser, loadNotes } from '@/app/lib/actions'
+import { loadUser, loadNotes } from '@/app/utils/actions'
 
 export default async function NotesLayout({
 	params: { username },

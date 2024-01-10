@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { loadUser } from '@/app/lib/actions'
+import { loadUser } from '@/app/utils/actions'
 
 export default async function Page({
 	params: { username },

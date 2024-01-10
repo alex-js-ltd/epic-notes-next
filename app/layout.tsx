@@ -2,8 +2,9 @@ import type { ReactNode } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Nunito_Sans } from 'next/font/google'
-import { cn } from './lib/misc'
-import { loadUserInfo } from './lib/actions'
+import { cn } from './utils/misc'
+import { loadUserInfo } from './utils/actions'
+import { HoneypotProvider } from './comps/honeypot'
 
 import './globals.css'
 
@@ -14,13 +15,8 @@ const nunito = Nunito_Sans({
 	display: 'swap',
 })
 
-export default async function RootLayout({
-	children,
-}: {
-	children: ReactNode
-}) {
+async function RootLayout({ children }: { children: ReactNode }) {
 	const data = await loadUserInfo()
-
 	return (
 		<html
 			lang="en"
@@ -55,6 +51,20 @@ export default async function RootLayout({
 				<div className="h-5" />
 			</body>
 		</html>
+	)
+}
+
+export default async function AppWithProviders({
+	children,
+}: {
+	children: ReactNode
+}) {
+	const data = await loadUserInfo()
+
+	return (
+		<HoneypotProvider {...data.honeyProps}>
+			<RootLayout>{children}</RootLayout>
+		</HoneypotProvider>
 	)
 }
 

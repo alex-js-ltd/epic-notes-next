@@ -9,11 +9,11 @@ import { Label } from '@/app/comps/ui/label'
 import { Input } from '@/app/comps/ui/input'
 import { Textarea } from '@/app/comps/ui/textarea'
 import { StatusButton } from '@/app/comps/ui/status-button'
-import { editNote } from '@/app/lib/actions'
-import { cn } from '@/app/lib/misc'
-import { NoteEditorSchema } from '@/app/lib/schemas'
+import { editNote } from '@/app/utils/actions'
+import { cn } from '@/app/utils/misc'
+import { NoteEditorSchema } from '@/app/utils/schemas'
 
-import type { Note, ImageFieldset } from '@/app/lib/schemas'
+import type { Note, ImageFieldset } from '@/app/utils/schemas'
 
 import {
 	conform,

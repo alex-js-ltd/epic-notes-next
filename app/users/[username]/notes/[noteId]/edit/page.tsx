@@ -1,4 +1,4 @@
-import { loadNote } from '@/app/lib/actions'
+import { loadNote } from '@/app/utils/actions'
 import EditForm from '@/app/comps/edit-form'
 
 export default async function Page({

@@ -2,7 +2,7 @@
 
 import NextLink, { LinkProps as NextLinkProps } from 'next/link'
 import { usePathname } from 'next/navigation'
-import { cn } from '@/app/lib/misc'
+import { cn } from '@/app/utils/misc'
 
 interface ActiveLinkProps extends NextLinkProps {
 	className?: string

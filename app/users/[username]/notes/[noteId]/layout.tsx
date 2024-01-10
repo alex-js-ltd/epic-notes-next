@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import type { Metadata } from 'next'
 
-import { loadNote } from '@/app/lib/actions'
+import { loadNote } from '@/app/utils/actions'
 
 export async function generateMetadata({
 	params: { noteId, username },

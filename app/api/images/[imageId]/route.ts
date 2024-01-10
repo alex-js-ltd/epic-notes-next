@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import { PassThrough } from 'node:stream'
 import { createReadableStreamFromReadable } from '@remix-run/node'
-import { db } from '@/app/lib/db.server'
-import { invariantResponse } from '@/app/lib/misc'
+import { db } from '@/app/utils/db.server'
+import { invariantResponse } from '@/app/utils/misc'
 
 export async function GET(
 	_request: Request,

@@ -1,9 +1,9 @@
 import { Label } from '@/app/comps/ui/label'
 import { Input } from '@/app/comps/ui/input'
 import { Button } from '@/app/comps/ui/button'
-import { SignUp } from '@/app/lib/actions'
+import { SignUp } from '@/app/utils/actions'
 import type { Metadata } from 'next'
-import { HoneypotInputs } from '@/app/comps/honeypot-inputs'
+import { HoneypotInputs } from '@/app/comps/honeypot'
 
 export default function SignupRoute() {
 	return (

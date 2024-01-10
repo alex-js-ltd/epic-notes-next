@@ -1,6 +1,6 @@
 'use client' // Error components must be Client Components
 
-import { getErrorMessage } from '@/app/lib/misc'
+import { getErrorMessage } from '@/app/utils/misc'
 
 export default function ErrorBoundary({
 	error,
