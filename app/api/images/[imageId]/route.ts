@@ -16,6 +16,9 @@ export async function GET(
 	invariantResponse(image, 'Image not found', { status: 404 })
 
 	const { filepath, contentType } = image
+
+	invariantResponse(filepath, 'no filepath found', { status: 404 })
+
 	const fileStat = await fs.promises.stat(filepath)
 	const body = new PassThrough()
 	const stream = fs.createReadStream(filepath)
