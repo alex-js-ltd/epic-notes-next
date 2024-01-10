@@ -8,6 +8,7 @@ import { revalidatePath } from 'next/cache'
 import { NoteEditorSchema } from './schemas'
 import { parse } from '@conform-to/zod'
 import { honeypot, checkHoneypot } from '@/app/utils/honeypot.server'
+import { cookies } from 'next/headers'
 
 export async function loadUserInfo() {
 	const honeyProps = honeypot.getInputProps()
@@ -108,6 +109,7 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 
 export async function SignUp(formData: FormData) {
 	checkHoneypot(formData)
+
 	// implement signup later
 	return redirect('/')
 }
