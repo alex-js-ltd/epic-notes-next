@@ -1,8 +1,6 @@
 import Link from 'next/link'
-
 import { Button } from '@/app/comps/ui/button'
 import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
-
 import { loadNote, removeNote } from '@/app/lib/actions'
 
 export default async function NoteRoute({

@@ -1,5 +1,5 @@
 'use server'
-
+// @ts-ignore
 import os from 'node:os'
 import { db, updateNote } from '@/app/lib/db.server'
 import invariant from 'tiny-invariant'
@@ -7,6 +7,8 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { NoteEditorSchema } from './schemas'
 import { parse } from '@conform-to/zod'
+import { honeypot } from '@/app/lib/honeypot.server'
+import { SpamError } from 'remix-utils/honeypot/server'
 
 export async function loadUserInfo() {
 	return { username: os.userInfo().username }
@@ -105,7 +107,15 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 }
 
 export async function SignUp(formData: FormData) {
-	invariant(!formData.get('name'), 'Form not submitted properly')
+	try {
+		honeypot.check(formData)
+	} catch (error) {
+		console.log(error)
+		if (error instanceof SpamError) {
+			throw new Error('Form not submitted properly')
+		}
+		throw error
+	}
 	// implement signup later
 	return redirect('/')
 }
