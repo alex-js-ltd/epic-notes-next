@@ -3,6 +3,7 @@ import { z } from 'zod'
 const schema = z.object({
 	NODE_ENV: z.enum(['production', 'development', 'test'] as const),
 	HONEYPOT_SECRET: z.string(),
+	SESSION_SECRET: z.string(),
 })
 
 declare global {
@@ -34,6 +35,7 @@ export function getEnv() {
 	return {
 		MODE: process.env.NODE_ENV,
 		HONEYPOT_SECRET: process.env.HONEYPOT_SECRET,
+		SESSION_SECRET: process.env.SESSION_SECRET,
 	}
 }
 
