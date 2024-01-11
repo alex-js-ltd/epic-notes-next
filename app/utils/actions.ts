@@ -111,5 +111,5 @@ export async function SignUp(formData: FormData) {
 	checkHoneypot(formData)
 
 	// implement signup later
-	return redirect('/')
+	// return redirect('/')
 }
