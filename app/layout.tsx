@@ -18,7 +18,7 @@ const nunito = Nunito_Sans({
 async function RootLayout({ children }: { children: ReactNode }) {
 	const data = await loadUserInfo()
 
-	const res = await fetch('http://localhost:3000/api/csrf')
+	const res = await fetch('http://localhost:3000/api/auth/signin/credentials')
 
 	console.log(res)
 	return (
