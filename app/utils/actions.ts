@@ -8,6 +8,9 @@ import { revalidatePath } from 'next/cache'
 import { NoteEditorSchema } from './schemas'
 import { parse } from '@conform-to/zod'
 import { honeypot, checkHoneypot } from '@/app/utils/honeypot.server'
+import { SessionData } from './session'
+import { defaultSession, sessionOptions, sleep } from './session'
+import { getIronSession } from 'iron-session'
 import { cookies } from 'next/headers'
 
 export async function loadUserInfo() {
@@ -107,9 +110,39 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	redirect(`/users/${username}/notes/${id}`)
 }
 
+export async function getSession(shouldSleep = false) {
+	const session = await getIronSession<SessionData>(cookies(), sessionOptions)
+
+	if (!session.isLoggedIn) {
+		session.isLoggedIn = defaultSession.isLoggedIn
+		session.username = defaultSession.username
+	}
+
+	if (shouldSleep) {
+		// simulate looking up the user in db
+		await sleep(250)
+	}
+
+	return session
+}
+
+export async function logout() {
+	// false => no db call for logout
+	const session = await getSession(false)
+	session.destroy()
+	revalidatePath('/', 'layout')
+}
+
 export async function SignUp(formData: FormData) {
 	checkHoneypot(formData)
+	const session = await getSession()
+
+	session.username = (formData.get('email') as string) ?? 'No username'
+	session.isLoggedIn = true
+
+	session.updateConfig
+	await session.save()
 
 	// implement signup later
-	return redirect('/')
+	//return redirect('/')
 }
