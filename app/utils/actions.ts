@@ -8,7 +8,8 @@ import { revalidatePath } from 'next/cache'
 import { NoteEditorSchema } from './schemas'
 import { parse } from '@conform-to/zod'
 import { honeypot, checkHoneypot } from '@/app/utils/honeypot.server'
-import { cookies } from 'next/headers'
+import { signIn } from '@/auth'
+import { AuthError } from 'next-auth'
 
 export async function loadUserInfo() {
 	const honeyProps = honeypot.getInputProps()
@@ -112,4 +113,23 @@ export async function SignUp(formData: FormData) {
 
 	// implement signup later
 	// return redirect('/')
+}
+
+export async function authenticate(
+	prevState: string | undefined,
+	formData: FormData,
+) {
+	try {
+		await signIn('credentials', formData)
+	} catch (error) {
+		if (error instanceof AuthError) {
+			switch (error.type) {
+				case 'CredentialsSignin':
+					return 'Invalid credentials.'
+				default:
+					return 'Something went wrong.'
+			}
+		}
+		throw error
+	}
 }
