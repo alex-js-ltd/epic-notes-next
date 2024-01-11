@@ -1,7 +1,7 @@
 import type { NextAuthConfig } from 'next-auth'
 import { getEnv } from './app/utils/env.server'
 
-const { SESSION_SECRET, MODE } = getEnv()
+const { SESSION_SECRET } = getEnv()
 
 export const authConfig = {
 	secret: SESSION_SECRET,

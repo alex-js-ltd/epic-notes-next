@@ -110,7 +110,7 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 
 export async function SignUp(formData: FormData) {
 	checkHoneypot(formData)
-
+	authenticate('hello', formData)
 	// implement signup later
 	// return redirect('/')
 }
