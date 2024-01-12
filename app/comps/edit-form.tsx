@@ -13,7 +13,7 @@ import { editNote } from '@/app/utils/actions'
 import { cn } from '@/app/utils/misc'
 import { NoteEditorSchema } from '@/app/utils/schemas'
 
-import type { Note, ImageFieldset } from '@/app/utils/schemas'
+import type { ImageFieldset, Note } from '@/app/utils/schemas'
 
 import {
 	conform,
@@ -27,9 +27,13 @@ import { getFieldsetConstraint, parse } from '@conform-to/zod'
 
 import { ErrorList } from './error-list'
 
-export default function EditForm({ note }: { note: Note }) {
-	const params = useParams<{ noteId: string; username: string }>()
+type User = {
+	id: string
+	name: string | null
+	username: string | null
+}
 
+export default function EditForm({ note, user }: { note: Note; user: User }) {
 	const [_state, formAction] = useFormState(editNote, null)
 
 	const [form, fields] = useForm({
@@ -117,7 +121,12 @@ export default function EditForm({ note }: { note: Note }) {
 				<ErrorList id={form.errorId} errors={form.errors} />
 
 				<input type="hidden" {...conform.input(fields.id)} />
-				<input type="hidden" name="username" value={params.username} />
+				<input
+					type="hidden"
+					name="username"
+					value={user?.username?.toString()}
+				/>
+				<input type="hidden" name="userId" value={user?.id} />
 			</form>
 			<div className={floatingToolbarClassName}>
 				<Button form={form.id} variant="destructive" type="reset">

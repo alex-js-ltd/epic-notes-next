@@ -18,6 +18,18 @@ export const ImageFieldsetSchema = z.object({
 	altText: z.string().optional(),
 })
 
+export function imageHasFile(
+	image: ImageFieldset,
+): image is ImageFieldset & { file: NonNullable<ImageFieldset['file']> } {
+	return Boolean(image.file?.size && image.file?.size > 0)
+}
+
+export function imageHasId(
+	image: ImageFieldset,
+): image is ImageFieldset & { id: NonNullable<ImageFieldset['id']> } {
+	return image.id != null
+}
+
 export const NoteEditorSchema = z.object({
 	id: z.string().min(1),
 	title: z.string().min(titleMinLength).max(titleMaxLength),

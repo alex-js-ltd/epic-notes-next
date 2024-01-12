@@ -1,14 +1,15 @@
 'use server'
 
 import os from 'node:os'
-import { db, updateNote } from '@/app/utils/db.server'
+import { db } from '@/app/utils/db.server'
 import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import { NoteEditorSchema } from './schemas'
+import { NoteEditorSchema, imageHasFile, imageHasId } from './schemas'
 import { parse } from '@conform-to/zod'
 import { honeypot, checkHoneypot } from '@/app/utils/honeypot.server'
 import { prisma } from '@/app/utils/db'
+import { createId as cuid } from '@paralleldrive/cuid2'
 
 export async function loadUserInfo() {
 	const honeyProps = honeypot.getInputProps()
@@ -32,7 +33,7 @@ export async function loadUser(username: string) {
 	invariant(user, `No user with the username ${username} exists`)
 
 	return {
-		user: { name: user?.name, username: user?.username },
+		user: { id: user.id, name: user?.name, username: user?.username },
 	}
 }
 
@@ -100,24 +101,85 @@ export async function removeNote(
 }
 
 export async function editNote(_prevState: unknown, formData: FormData) {
-	const submission = parse(formData, {
-		schema: NoteEditorSchema,
+	const submission = await parse(formData, {
+		schema: NoteEditorSchema.transform(async ({ images = [], ...data }) => {
+			return {
+				...data,
+				imageUpdates: await Promise.all(
+					images.filter(imageHasId).map(async i => {
+						if (imageHasFile(i)) {
+							return {
+								id: i.id,
+								altText: i.altText,
+								contentType: i.file.type,
+								blob: Buffer.from(await i.file.arrayBuffer()),
+							}
+						} else {
+							return { id: i.id, altText: i.altText }
+						}
+					}),
+				),
+				newImages: await Promise.all(
+					images
+						.filter(imageHasFile)
+						.filter(i => !i.id)
+						.map(async image => {
+							return {
+								altText: image.altText,
+								contentType: image.file.type,
+								blob: Buffer.from(await image.file.arrayBuffer()),
+							}
+						}),
+				),
+			}
+		}),
+		async: true,
 	})
 
 	if (!submission.value) {
 		return { status: 'error', error: submission?.error }
 	}
 
-	const { id, title, content, images } = submission.value
-	await updateNote({ id, title, content, images })
+	const {
+		id: noteId,
+		title,
+		content,
+		imageUpdates = [],
+		newImages = [],
+	} = submission.value
+
+	const userId = formData.get('userId') as string
+
+	const updatedNote = await prisma.note.upsert({
+		select: { id: true, owner: { select: { username: true } } },
+		where: { id: noteId ?? '__new_note__' },
+		create: {
+			ownerId: userId,
+			title,
+			content,
+			images: { create: newImages },
+		},
+		update: {
+			title,
+			content,
+			images: {
+				deleteMany: { id: { notIn: imageUpdates.map(i => i.id) } },
+				updateMany: imageUpdates.map(updates => ({
+					where: { id: updates.id },
+					data: { ...updates, id: updates.blob ? cuid() : updates.id },
+				})),
+				create: newImages,
+			},
+		},
+	})
 
 	const username = formData.get('username')
 
 	invariant(username, `No username exists`)
 
-	revalidatePath(`/users/${username}/notes/${id}/edit`)
-	revalidatePath(`/users/${username}/notes/${id}`)
-	redirect(`/users/${username}/notes/${id}`)
+	revalidatePath(`/users/${username}/notes/${noteId}/edit`)
+	revalidatePath(`/users/${username}/notes/${noteId}`)
+	redirect(`/users/${username}/notes/${noteId}`)
 }
 
 export async function SignUp(formData: FormData) {
