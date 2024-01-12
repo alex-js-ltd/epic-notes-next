@@ -22,7 +22,7 @@ const validateRequest = async (request: Request) => {
 	return wh.verify(payloadString, svixHeaders) as WebhookEvent
 }
 
-export const POST = async (request: Request) => {
+export async function POST(request: Request) {
 	const payload = await validateRequest(request)
 
 	if (payload.type === 'user.created') {
