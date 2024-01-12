@@ -7,7 +7,7 @@ import { getEnv } from '@/app/utils/env.server'
 
 const { CLERK_WEBHOOK_SECRET } = getEnv()
 
-const webhookSecret = CLERK_WEBHOOK_SECRET as string
+const webhookSecret = CLERK_WEBHOOK_SECRET
 
 const validateRequest = async (request: Request) => {
 	const payloadString = await request.text()
@@ -24,7 +24,7 @@ const validateRequest = async (request: Request) => {
 
 export async function POST(request: Request) {
 	const payload = await validateRequest(request)
-	console.log(payload)
+
 	if (payload.type === 'user.created') {
 		try {
 			const user = await prisma.user.create({

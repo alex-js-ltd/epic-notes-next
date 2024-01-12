@@ -8,9 +8,9 @@ import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { SignupSchema } from '@/app/utils/schemas'
 import { useSignUp } from '@clerk/nextjs'
-import invariant from 'tiny-invariant'
 import { ErrorList } from './error-list'
 import { useRouter } from 'next/navigation'
+import { checkHoneypot } from '../utils/honeypot.server'
 
 export default function SignupForm() {
 	const { signUp } = useSignUp()
@@ -24,33 +24,37 @@ export default function SignupForm() {
 			return parse(formData, { schema: SignupSchema })
 		},
 		shouldRevalidate: 'onBlur',
-		async onSubmit(event, { submission }) {
-			event.preventDefault()
-
-			if (!signUp) return
-
-			const { email } = submission.value
-
-			invariant(typeof email === 'string')
-
-			try {
-				await signUp.create({
-					emailAddress: email,
-				})
-
-				// send the email.
-				await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
-				router.push('/auth/verify')
-			} catch (err: unknown) {
-				console.error(JSON.stringify(err, null, 2))
-			}
-		},
 	})
+
+	async function action(formData: FormData) {
+		if (!signUp) return
+
+		const submission = parse(formData, { schema: SignupSchema })
+
+		if (!submission.value || submission.intent !== 'submit') {
+			return submission
+		}
+
+		const { email } = submission.value
+
+		try {
+			await signUp.create({
+				emailAddress: email,
+			})
+
+			// send the email.
+			await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
+			router.push('/auth/verify')
+		} catch (err: unknown) {
+			console.error(JSON.stringify(err, null, 2))
+		}
+	}
 
 	return (
 		<form
 			className="mx-auto flex min-w-[368px] max-w-sm flex-col gap-4"
 			{...form.props}
+			action={action}
 		>
 			<HoneypotInputs />
 			<div>

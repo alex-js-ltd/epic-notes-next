@@ -12,6 +12,7 @@ import { createId as cuid } from '@paralleldrive/cuid2'
 
 export async function loadUserInfo() {
 	const honeyProps = honeypot.getInputProps()
+
 	return { username: os.userInfo().username, honeyProps }
 }
 
@@ -179,13 +180,4 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	revalidatePath(`/users/${username}/notes/${noteId}/edit`)
 	revalidatePath(`/users/${username}/notes/${noteId}`)
 	redirect(`/users/${username}/notes/${noteId}`)
-}
-
-export async function SignUp(formData: FormData) {
-	checkHoneypot(formData)
-
-	const email = formData.get('email')
-	const password = formData.get('password')
-
-	// return redirect('/')
 }

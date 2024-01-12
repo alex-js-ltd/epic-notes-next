@@ -20,34 +20,39 @@ export default function VerifyForm() {
 			return parse(formData, { schema: VerifySchema })
 		},
 		shouldRevalidate: 'onBlur',
-		async onSubmit(event, { submission }) {
-			event.preventDefault()
-
-			if (!signUp) return
-
-			const { code } = submission.value
-
-			try {
-				const completeSignUp = await signUp.attemptEmailAddressVerification({
-					code,
-				})
-				if (completeSignUp.status !== 'complete') {
-					/*  investigate the response, to see if there was an error
-                   or if the user needs to complete more steps.*/
-					console.log(JSON.stringify(completeSignUp, null, 2))
-				}
-				if (completeSignUp.status === 'complete') {
-					await setActive({ session: completeSignUp.createdSessionId })
-					router.push('/users/c2_ardella_hermiston/notes')
-				}
-			} catch (err: unknown) {
-				console.error(JSON.stringify(err, null, 2))
-			}
-		},
 	})
 
+	async function action(formData: FormData) {
+		if (!signUp) return
+
+		const submission = parse(formData, { schema: VerifySchema })
+
+		if (!submission.value || submission.intent !== 'submit') {
+			return submission
+		}
+
+		const { code } = submission.value
+
+		try {
+			const completeSignUp = await signUp.attemptEmailAddressVerification({
+				code,
+			})
+			if (completeSignUp.status !== 'complete') {
+				/*  investigate the response, to see if there was an error
+                   or if the user needs to complete more steps.*/
+				console.log(JSON.stringify(completeSignUp, null, 2))
+			}
+			if (completeSignUp.status === 'complete') {
+				await setActive({ session: completeSignUp.createdSessionId })
+				router.push('/users/c2_ardella_hermiston/notes')
+			}
+		} catch (err: unknown) {
+			console.error(JSON.stringify(err, null, 2))
+		}
+	}
+
 	return (
-		<form className="flex-1" {...form.props}>
+		<form className="flex-1" {...form.props} action={action}>
 			<Label htmlFor={fields.code.id}>Code</Label>
 			<Input autoFocus {...conform.input(fields.code)} />
 

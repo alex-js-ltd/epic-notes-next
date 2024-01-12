@@ -51,6 +51,7 @@ export default function EditForm({ note }: { note: Note }) {
 	const imageList = useFieldList(form.ref, fields.images)
 
 	const params = useParams<{ username: string }>()
+
 	return (
 		<div className="absolute inset-0">
 			<form
