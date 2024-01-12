@@ -21,9 +21,12 @@
     "@remix-run/node": "^2.4.1",
     "@vercel/postgres": "^0.5.1",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "crypto-js": "^4.2.0",
+    "enforce-unique": "^1.2.0",
+    "fs-extra": "^11.2.0",
     "intl-parse-accept-language": "^1.0.0",
     "is-ip": "^5.0.1",
     "next": "14.0.4",
@@ -37,7 +40,10 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.3.1",
     "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -49,6 +55,6 @@
     "typescript": "^5"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "npx tsx prisma/seed.ts"
   }
 }
