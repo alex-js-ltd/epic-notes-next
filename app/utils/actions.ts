@@ -36,7 +36,7 @@ export async function loadUser(username: string) {
 	}
 }
 
-export async function loadNotes(username: string) {
+export async function loadOwner(username: string) {
 	const owner = await prisma.user.findFirst({
 		select: {
 			id: true,
@@ -48,9 +48,9 @@ export async function loadNotes(username: string) {
 		where: { username: username },
 	})
 
-	invariant(owner?.notes, `Notes not found`)
+	invariant(owner, `Owner not found`)
 
-	return { notes: owner.notes }
+	return { owner }
 }
 
 export async function loadNote(noteId: string) {

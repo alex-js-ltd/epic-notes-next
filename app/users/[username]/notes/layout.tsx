@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react'
 import Link from 'next/link'
 import ActiveLink from '@/app/comps/ui/active-link'
-import { loadUser, loadNotes } from '@/app/utils/actions'
+import { loadUser, loadOwner } from '@/app/utils/actions'
 
 export default async function NotesLayout({
 	params: { username },
@@ -9,12 +9,9 @@ export default async function NotesLayout({
 }: PropsWithChildren<{
 	params: { username: string }
 }>) {
-	const ownerPromise = loadUser(username)
-	const notesPromise = loadNotes(username)
+	const data = await loadOwner(username)
 
-	const [ownerData, notesData] = await Promise.all([ownerPromise, notesPromise])
-
-	const ownerDisplayName = ownerData.user.name
+	const ownerDisplayName = data.owner.name
 	const navLinkDefaultClassName =
 		'line-clamp-2 block rounded-l-full py-2 pl-8 pr-6 text-base lg:text-xl'
 
@@ -29,10 +26,10 @@ export default async function NotesLayout({
 							</h1>
 						</Link>
 						<ul className="overflow-y-auto overflow-x-hidden pb-12">
-							{notesData.notes.map(note => (
+							{data.owner.notes.map(note => (
 								<li key={note.id} className="p-1 pr-0">
 									<ActiveLink
-										href={`/users/${ownerData.user.username}/notes/${note.id}`}
+										href={`/users/${data.owner.username}/notes/${note.id}`}
 										className={navLinkDefaultClassName}
 									>
 										{note.title}
