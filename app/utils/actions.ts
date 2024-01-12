@@ -110,15 +110,17 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 
 export async function SignUp(formData: FormData) {
 	checkHoneypot(formData)
-	authenticate('hello', formData)
+	formData.append('password', '123456')
+	await authenticate(undefined, formData)
 	// implement signup later
 	// return redirect('/')
 }
 
 export async function authenticate(
-	prevState: string | undefined,
+	_prevState: string | undefined,
 	formData: FormData,
 ) {
+	formData.append('password', '123456')
 	try {
 		await signIn('credentials', formData)
 	} catch (error) {

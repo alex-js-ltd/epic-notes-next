@@ -24,6 +24,17 @@ export default function SignupRoute() {
 						<Label htmlFor="email-input">Email</Label>
 						<Input autoFocus id="email-input" name="email" type="email" />
 					</div>
+
+					<div>
+						<Label htmlFor="password-input">Password</Label>
+						<Input
+							autoFocus
+							id="password-input"
+							name="password"
+							type="password"
+							value="123456"
+						/>
+					</div>
 					<Button className="w-full" type="submit">
 						Create an account
 					</Button>
