@@ -1,9 +1,5 @@
-import { Label } from '@/app/comps/ui/label'
-import { Input } from '@/app/comps/ui/input'
-import { Button } from '@/app/comps/ui/button'
-import { SignUp } from '@/app/utils/actions'
 import type { Metadata } from 'next'
-import { HoneypotInputs } from '@/app/comps/honeypot'
+import SignUpForm from '@/app/comps/signup-form'
 
 export default function SignupRoute() {
 	return (
@@ -15,30 +11,8 @@ export default function SignupRoute() {
 						Please enter your details.
 					</p>
 				</div>
-				<form
-					className="mx-auto flex min-w-[368px] max-w-sm flex-col gap-4"
-					action={SignUp}
-				>
-					<HoneypotInputs />
-					<div>
-						<Label htmlFor="email-input">Email</Label>
-						<Input autoFocus id="email-input" name="email" type="email" />
-					</div>
 
-					<div>
-						<Label htmlFor="password-input">Password</Label>
-						<Input
-							autoFocus
-							id="password-input"
-							name="password"
-							type="password"
-							value="123456"
-						/>
-					</div>
-					<Button className="w-full" type="submit">
-						Create an account
-					</Button>
-				</form>
+				<SignUpForm />
 			</div>
 		</div>
 	)

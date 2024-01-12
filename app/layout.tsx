@@ -5,6 +5,7 @@ import { Nunito_Sans } from 'next/font/google'
 import { cn } from './utils/misc'
 import { loadUserInfo } from './utils/actions'
 import { HoneypotProvider } from './comps/honeypot'
+import { ClerkProvider } from '@clerk/nextjs'
 
 import './globals.css'
 
@@ -63,9 +64,11 @@ export default async function AppWithProviders({
 	const data = await loadUserInfo()
 
 	return (
-		<HoneypotProvider {...data.honeyProps}>
-			<RootLayout>{children}</RootLayout>
-		</HoneypotProvider>
+		<ClerkProvider>
+			<HoneypotProvider {...data.honeyProps}>
+				<RootLayout>{children}</RootLayout>
+			</HoneypotProvider>
+		</ClerkProvider>
 	)
 }
 

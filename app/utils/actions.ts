@@ -8,8 +8,7 @@ import { revalidatePath } from 'next/cache'
 import { NoteEditorSchema } from './schemas'
 import { parse } from '@conform-to/zod'
 import { honeypot, checkHoneypot } from '@/app/utils/honeypot.server'
-import { signIn } from '@/auth'
-import { AuthError } from 'next-auth'
+import { getEnv } from './env.server'
 
 export async function loadUserInfo() {
 	const honeyProps = honeypot.getInputProps()
@@ -108,53 +107,12 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	redirect(`/users/${username}/notes/${id}`)
 }
 
-export async function getSession(shouldSleep = false) {
-	const session = await getIronSession<SessionData>(cookies(), sessionOptions)
-
-	if (!session.isLoggedIn) {
-		session.isLoggedIn = defaultSession.isLoggedIn
-		session.username = defaultSession.username
-	}
-
-	if (shouldSleep) {
-		// simulate looking up the user in db
-		await sleep(250)
-	}
-
-	return session
-}
-
-export async function logout() {
-	// false => no db call for logout
-	const session = await getSession(false)
-	session.destroy()
-	revalidatePath('/', 'layout')
-}
-
 export async function SignUp(formData: FormData) {
 	checkHoneypot(formData)
-	formData.append('password', '123456')
-	await authenticate(undefined, formData)
+
+	const email = formData.get('email')
+	const password = formData.get('password')
+
 	// implement signup later
 	// return redirect('/')
-}
-
-export async function authenticate(
-	_prevState: string | undefined,
-	formData: FormData,
-) {
-	formData.append('password', '123456')
-	try {
-		await signIn('credentials', formData)
-	} catch (error) {
-		if (error instanceof AuthError) {
-			switch (error.type) {
-				case 'CredentialsSignin':
-					return 'Invalid credentials.'
-				default:
-					return 'Something went wrong.'
-			}
-		}
-		throw error
-	}
 }

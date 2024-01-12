@@ -2,8 +2,8 @@ import { z } from 'zod'
 
 const schema = z.object({
 	NODE_ENV: z.enum(['production', 'development', 'test'] as const),
-	HONEYPOT_SECRET: z.string(),
-	SESSION_SECRET: z.string(),
+	CLERK_PUBLISHABLE_KEY: z.string(),
+	BASE_URL: z.string(),
 })
 
 declare global {
@@ -34,8 +34,7 @@ export function init() {
 export function getEnv() {
 	return {
 		MODE: process.env.NODE_ENV,
-		HONEYPOT_SECRET: process.env.HONEYPOT_SECRET,
-		SESSION_SECRET: process.env.SESSION_SECRET,
+		BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
 	}
 }
 
