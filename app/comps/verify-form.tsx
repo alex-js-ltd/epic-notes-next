@@ -38,7 +38,7 @@ export default function VerifyForm() {
 				}
 				if (completeSignUp.status === 'complete') {
 					await setActive({ session: completeSignUp.createdSessionId })
-					router.push('/')
+					router.push('/users/c2_ardella_hermiston/notes')
 				}
 			} catch (err: unknown) {
 				console.error(JSON.stringify(err, null, 2))
