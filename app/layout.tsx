@@ -34,8 +34,8 @@ async function RootLayout({ children }: { children: ReactNode }) {
 							<div className="font-light">epic</div>
 							<div className="font-bold">notes</div>
 						</Link>
-						<Link className="underline" href="/users/kody/notes/d27a197e">
-							Kody's Notes
+						<Link className="underline" href="/auth/signup">
+							Signup
 						</Link>
 					</nav>
 				</header>

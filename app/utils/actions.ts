@@ -8,10 +8,8 @@ import { revalidatePath } from 'next/cache'
 import { NoteEditorSchema } from './schemas'
 import { parse } from '@conform-to/zod'
 import { honeypot, checkHoneypot } from '@/app/utils/honeypot.server'
-import { SessionData } from './session'
-import { defaultSession, sessionOptions, sleep } from './session'
-import { getIronSession } from 'iron-session'
-import { cookies } from 'next/headers'
+import { signIn } from '@/auth'
+import { AuthError } from 'next-auth'
 
 export async function loadUserInfo() {
 	const honeyProps = honeypot.getInputProps()
@@ -135,14 +133,28 @@ export async function logout() {
 
 export async function SignUp(formData: FormData) {
 	checkHoneypot(formData)
-	const session = await getSession()
-
-	session.username = (formData.get('email') as string) ?? 'No username'
-	session.isLoggedIn = true
-
-	session.updateConfig
-	await session.save()
-
+	formData.append('password', '123456')
+	await authenticate(undefined, formData)
 	// implement signup later
-	//return redirect('/')
+	// return redirect('/')
+}
+
+export async function authenticate(
+	_prevState: string | undefined,
+	formData: FormData,
+) {
+	formData.append('password', '123456')
+	try {
+		await signIn('credentials', formData)
+	} catch (error) {
+		if (error instanceof AuthError) {
+			switch (error.type) {
+				case 'CredentialsSignin':
+					return 'Invalid credentials.'
+				default:
+					return 'Something went wrong.'
+			}
+		}
+		throw error
+	}
 }
