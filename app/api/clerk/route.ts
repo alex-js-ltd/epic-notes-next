@@ -1,9 +1,9 @@
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { headers } from 'next/headers'
 import { Webhook } from 'svix'
-import { prisma } from '@/utils/db'
+import { prisma } from '@/app/utils/db'
 
-import { getEnv } from '@/utils/env'
+import { getEnv } from '@/app/utils/env.server'
 
 const { CLERK_WEBHOOK_SECRET } = getEnv()
 

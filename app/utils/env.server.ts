@@ -3,6 +3,7 @@ import { z } from 'zod'
 const schema = z.object({
 	NODE_ENV: z.enum(['production', 'development', 'test'] as const),
 	BASE_URL: z.string(),
+	CLERK_WEBHOOK_SECRET: z.string(),
 })
 
 declare global {
@@ -34,6 +35,7 @@ export function getEnv() {
 	return {
 		MODE: process.env.NODE_ENV,
 		BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+		CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
 	}
 }
 
