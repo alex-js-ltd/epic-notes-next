@@ -24,7 +24,7 @@ const validateRequest = async (request: Request) => {
 
 export async function POST(request: Request) {
 	const payload = await validateRequest(request)
-
+	console.log(payload)
 	if (payload.type === 'user.created') {
 		try {
 			const user = await prisma.user.create({
