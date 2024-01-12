@@ -10,7 +10,6 @@ import { SignupSchema } from '@/app/utils/schemas'
 import { useSignUp } from '@clerk/nextjs'
 import { ErrorList } from './error-list'
 import { useRouter } from 'next/navigation'
-import { checkHoneypot } from '../utils/honeypot.server'
 
 export default function SignupForm() {
 	const { signUp } = useSignUp()
@@ -24,6 +23,9 @@ export default function SignupForm() {
 			return parse(formData, { schema: SignupSchema })
 		},
 		shouldRevalidate: 'onBlur',
+		onSubmit(event, { submission }) {
+			// event.preventDefault()
+		},
 	})
 
 	async function action(formData: FormData) {

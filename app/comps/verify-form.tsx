@@ -20,6 +20,9 @@ export default function VerifyForm() {
 			return parse(formData, { schema: VerifySchema })
 		},
 		shouldRevalidate: 'onBlur',
+		onSubmit(event, { submission }) {
+			// event.preventDefault()
+		},
 	})
 
 	async function action(formData: FormData) {
