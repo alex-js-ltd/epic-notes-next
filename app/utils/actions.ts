@@ -147,13 +147,17 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		newImages = [],
 	} = submission.value
 
-	const userId = formData.get('userId') as string
+	const username = formData.get('username')
+
+	invariant(typeof username === 'string')
+
+	const { user } = await loadUser(username)
 
 	const updatedNote = await prisma.note.upsert({
 		select: { id: true, owner: { select: { username: true } } },
 		where: { id: noteId ?? '__new_note__' },
 		create: {
-			ownerId: userId,
+			ownerId: user.id,
 			title,
 			content,
 			images: { create: newImages },
@@ -171,10 +175,6 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 			},
 		},
 	})
-
-	const username = formData.get('username')
-
-	invariant(username, `No username exists`)
 
 	revalidatePath(`/users/${username}/notes/${noteId}/edit`)
 	revalidatePath(`/users/${username}/notes/${noteId}`)

@@ -6,9 +6,7 @@ export default async function Page({
 }: {
 	params: { noteId: string; username: string }
 }) {
-	const noteData = await loadNote(params.noteId)
+	const data = await loadNote(params.noteId)
 
-	const userData = await loadUser(params.username)
-
-	return <EditForm note={noteData.note} user={userData.user} />
+	return <EditForm note={data.note} />
 }

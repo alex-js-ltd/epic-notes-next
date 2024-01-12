@@ -27,13 +27,7 @@ import { getFieldsetConstraint, parse } from '@conform-to/zod'
 
 import { ErrorList } from './error-list'
 
-type User = {
-	id: string
-	name: string | null
-	username: string | null
-}
-
-export default function EditForm({ note, user }: { note: Note; user: User }) {
+export default function EditForm({ note }: { note: Note }) {
 	const [_state, formAction] = useFormState(editNote, null)
 
 	const [form, fields] = useForm({
@@ -56,6 +50,7 @@ export default function EditForm({ note, user }: { note: Note; user: User }) {
 	})
 	const imageList = useFieldList(form.ref, fields.images)
 
+	const params = useParams<{ username: string }>()
 	return (
 		<div className="absolute inset-0">
 			<form
@@ -121,12 +116,7 @@ export default function EditForm({ note, user }: { note: Note; user: User }) {
 				<ErrorList id={form.errorId} errors={form.errors} />
 
 				<input type="hidden" {...conform.input(fields.id)} />
-				<input
-					type="hidden"
-					name="username"
-					value={user?.username?.toString()}
-				/>
-				<input type="hidden" name="userId" value={user?.id} />
+				<input type="hidden" name="username" value={params.username} />
 			</form>
 			<div className={floatingToolbarClassName}>
 				<Button form={form.id} variant="destructive" type="reset">
