@@ -25,6 +25,8 @@ import {
 } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 
+import { ErrorList } from './error-list'
+
 export default function EditForm({ note }: { note: Note }) {
 	const params = useParams<{ noteId: string; username: string }>()
 
@@ -222,22 +224,4 @@ function ImageChooser({ config }: { config: FieldConfig<ImageFieldset> }) {
 			</div>
 		</fieldset>
 	)
-}
-
-function ErrorList({
-	id,
-	errors,
-}: {
-	id?: string
-	errors?: Array<string | undefined> | null
-}) {
-	return errors?.length ? (
-		<ul id={id} className="flex flex-col gap-1">
-			{errors.map((error, i) => (
-				<li key={i} className="text-[10px] text-foreground-destructive">
-					{error}
-				</li>
-			))}
-		</ul>
-	) : null
 }

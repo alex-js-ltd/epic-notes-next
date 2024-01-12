@@ -9,6 +9,7 @@ import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { SignupSchema } from '@/app/utils/schemas'
 import { useSignUp } from '@clerk/nextjs'
 import invariant from 'tiny-invariant'
+import { ErrorList } from './error-list'
 
 export default function SignupForm() {
 	const { signUp, setActive } = useSignUp()
@@ -57,11 +58,22 @@ export default function SignupForm() {
 			<div>
 				<Label htmlFor={fields.email.id}>Email</Label>
 				<Input autoFocus {...conform.input(fields.email)} />
+
+				<div className="min-h-[32px] px-4 pb-3 pt-1">
+					<ErrorList id={fields.email.errorId} errors={fields.email.errors} />
+				</div>
 			</div>
 
 			<div>
 				<Label htmlFor={fields.password.id}>Password</Label>
 				<Input type="password" {...conform.input(fields.password)} />
+
+				<div className="min-h-[32px] px-4 pb-3 pt-1">
+					<ErrorList
+						id={fields.password.errorId}
+						errors={fields.password.errors}
+					/>
+				</div>
 			</div>
 			<Button className="w-full" type="submit">
 				Create an account
