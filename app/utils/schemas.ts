@@ -65,5 +65,8 @@ export const EmailSchema = z
 
 export const SignupSchema = z.object({
 	email: EmailSchema,
-	password: PasswordSchema,
+})
+
+export const VerifySchema = z.object({
+	code: z.string().min(6).max(6),
 })
