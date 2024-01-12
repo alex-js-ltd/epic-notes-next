@@ -1,7 +1,6 @@
 'use server'
 
 import os from 'node:os'
-
 import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
@@ -188,6 +187,5 @@ export async function SignUp(formData: FormData) {
 	const email = formData.get('email')
 	const password = formData.get('password')
 
-	// implement signup later
 	// return redirect('/')
 }
