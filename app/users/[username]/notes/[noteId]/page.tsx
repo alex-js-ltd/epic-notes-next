@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Button } from '@/app/comps/ui/button'
 import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
 import { loadNote, removeNote } from '@/app/utils/actions'
+import { getNoteImgSrc } from '@/app/utils/misc'
 
 export default async function NoteRoute({
 	params: { noteId, username },
@@ -19,9 +20,9 @@ export default async function NoteRoute({
 				<ul className="flex flex-wrap gap-5 py-5">
 					{data.note.images.map(image => (
 						<li key={image.id}>
-							<a href={`/api/images/${image.id}`}>
+							<a href={getNoteImgSrc(image.id)}>
 								<img
-									src={`/api/images/${image?.id}`}
+									src={getNoteImgSrc(image.id)}
 									alt={image.altText ?? ''}
 									className="h-32 w-32 rounded-lg object-cover"
 								/>

@@ -14,7 +14,7 @@ export default async function NotesLayout({
 
 	const [ownerData, notesData] = await Promise.all([ownerPromise, notesPromise])
 
-	const ownerDisplayName = ownerData.user.name ?? ownerData.user.username
+	const ownerDisplayName = ownerData.user.name
 	const navLinkDefaultClassName =
 		'line-clamp-2 block rounded-l-full py-2 pl-8 pr-6 text-base lg:text-xl'
 
@@ -32,9 +32,7 @@ export default async function NotesLayout({
 							{notesData.notes.map(note => (
 								<li key={note.id} className="p-1 pr-0">
 									<ActiveLink
-										href={`/users/${ownerDisplayName.toLowerCase()}/notes/${
-											note.id
-										}`}
+										href={`/users/${ownerData.user.username}/notes/${note.id}`}
 										className={navLinkDefaultClassName}
 									>
 										{note.title}

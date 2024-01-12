@@ -8,6 +8,7 @@ import { revalidatePath } from 'next/cache'
 import { NoteEditorSchema } from './schemas'
 import { parse } from '@conform-to/zod'
 import { honeypot, checkHoneypot } from '@/app/utils/honeypot.server'
+import { prisma } from '@/app/utils/db'
 
 export async function loadUserInfo() {
 	const honeyProps = honeypot.getInputProps()
@@ -15,44 +16,57 @@ export async function loadUserInfo() {
 }
 
 export async function loadUser(username: string) {
-	const user = db.user.findFirst({
+	const user = await prisma.user.findFirst({
+		select: {
+			id: true,
+			name: true,
+			username: true,
+			createdAt: true,
+			image: { select: { id: true } },
+		},
 		where: {
-			username: {
-				equals: username,
-			},
+			username: username,
 		},
 	})
 
 	invariant(user, `No user with the username ${username} exists`)
 
 	return {
-		user: { name: user.name, username: user.username },
+		user: { name: user?.name, username: user?.username },
 	}
 }
 
 export async function loadNotes(username: string) {
-	const notes = db.note
-		.findMany({
-			where: {
-				owner: {
-					username: {
-						equals: username,
-					},
-				},
-			},
-		})
-		.map(({ id, title }) => ({ id, title }))
+	const owner = await prisma.user.findFirst({
+		select: {
+			id: true,
+			name: true,
+			username: true,
+			image: { select: { id: true } },
+			notes: { select: { id: true, title: true } },
+		},
+		where: { username: username },
+	})
 
-	invariant(notes, `Notes not found`)
+	invariant(owner?.notes, `Notes not found`)
 
-	return { notes }
+	return { notes: owner.notes }
 }
 
 export async function loadNote(noteId: string) {
-	const note = db.note.findFirst({
-		where: {
-			id: {
-				equals: noteId,
+	const note = await prisma.note.findUnique({
+		where: { id: noteId },
+		select: {
+			id: true,
+			title: true,
+			content: true,
+			ownerId: true,
+			updatedAt: true,
+			images: {
+				select: {
+					id: true,
+					altText: true,
+				},
 			},
 		},
 	})

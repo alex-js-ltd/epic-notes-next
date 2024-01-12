@@ -63,3 +63,7 @@ export function typedBoolean<ValueType>(
 ): value is Exclude<ValueType, FalsyType> {
 	return Boolean(value)
 }
+
+export function getNoteImgSrc(imageId: string) {
+	return `/api/images/${imageId}`
+}
