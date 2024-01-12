@@ -1,7 +1,7 @@
 'use server'
 
 import os from 'node:os'
-import { db } from '@/app/utils/db.server'
+
 import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
@@ -95,7 +95,7 @@ export async function removeNote(
 
 	invariant(intent === 'delete', 'Invalid intent')
 
-	db.note.delete({ where: { id: { equals: noteId } } })
+	await prisma.note.delete({ where: { id: noteId } })
 
 	redirect(`/users/${username}/notes`)
 }
