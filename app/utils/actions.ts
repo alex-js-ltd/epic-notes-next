@@ -8,7 +8,6 @@ import { revalidatePath } from 'next/cache'
 import { NoteEditorSchema } from './schemas'
 import { parse } from '@conform-to/zod'
 import { honeypot, checkHoneypot } from '@/app/utils/honeypot.server'
-import { getEnv } from './env.server'
 
 export async function loadUserInfo() {
 	const honeyProps = honeypot.getInputProps()
