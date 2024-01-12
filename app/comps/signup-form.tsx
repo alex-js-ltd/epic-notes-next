@@ -11,7 +11,6 @@ import { useSignUp } from '@clerk/nextjs'
 import invariant from 'tiny-invariant'
 import { ErrorList } from './error-list'
 import { useRouter } from 'next/navigation'
-import { EmailAddress } from '@clerk/nextjs/server'
 
 export default function SignupForm() {
 	const { signUp } = useSignUp()

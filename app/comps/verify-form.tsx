@@ -8,7 +8,6 @@ import { useSignUp } from '@clerk/nextjs'
 import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { useRouter } from 'next/navigation'
-
 import { VerifySchema } from '@/app/utils/schemas'
 
 export default function VerifyForm() {
