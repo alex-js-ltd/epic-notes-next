@@ -4,11 +4,18 @@ import os from 'node:os'
 import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import { NoteEditorSchema, imageHasFile, imageHasId } from './schemas'
+import {
+	NoteEditorSchema,
+	imageHasFile,
+	imageHasId,
+	OnboardingFormSchema,
+} from './schemas'
 import { parse } from '@conform-to/zod'
 import { honeypot, checkHoneypot } from '@/app/utils/honeypot.server'
 import { prisma } from '@/app/utils/db'
 import { createId as cuid } from '@paralleldrive/cuid2'
+import { signup } from '@/app/utils/auth.server'
+import { z } from 'zod'
 
 export async function loadUserInfo() {
 	const honeyProps = honeypot.getInputProps()
@@ -180,4 +187,29 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 	revalidatePath(`/users/${username}/notes/${noteId}/edit`)
 	revalidatePath(`/users/${username}/notes/${noteId}`)
 	redirect(`/users/${username}/notes/${noteId}`)
+}
+
+export async function onBoardUser(formData: FormData) {
+	const submission = await parse(formData, {
+		schema: OnboardingFormSchema.superRefine(async (data, ctx) => {
+			const existingUser = await prisma.user.findUnique({
+				where: { username: data.username },
+				select: { id: true },
+			})
+			if (existingUser) {
+				ctx.addIssue({
+					path: ['username'],
+					code: z.ZodIssueCode.custom,
+					message: 'A user already exists with this username',
+				})
+				return
+			}
+		}).transform(async data => {
+			const session = await signup({ ...data })
+			return { ...data, session }
+		}),
+		async: true,
+	})
+
+	console.log(submission)
 }

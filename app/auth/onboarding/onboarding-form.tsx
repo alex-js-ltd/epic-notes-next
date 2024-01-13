@@ -6,10 +6,11 @@ import { HoneypotInputs } from '@/app/comps/honeypot'
 import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { OnboardingFormSchema } from '@/app/utils/schemas'
+import { onBoardUser } from '@/app/utils/actions'
 
 export default function OnboaringForm() {
 	const [form, fields] = useForm({
-		id: 'signup-form',
+		id: 'onboarding-form',
 		constraint: getFieldsetConstraint(OnboardingFormSchema),
 		defaultValue: { redirectTo: '' },
 
@@ -20,7 +21,11 @@ export default function OnboaringForm() {
 	})
 
 	return (
-		<form className="mx-auto min-w-[368px] max-w-sm" {...form.props}>
+		<form
+			className="mx-auto min-w-[368px] max-w-sm"
+			{...form.props}
+			action={onBoardUser}
+		>
 			<HoneypotInputs />
 			<Field
 				labelProps={{ htmlFor: fields.username.id, children: 'Username' }}
