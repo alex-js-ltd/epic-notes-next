@@ -82,3 +82,26 @@ export const SignupSchema = z.object({
 export const VerifySchema = z.object({
 	code: z.string().min(6).max(6),
 })
+
+export const OnboardingFormSchema = z
+	.object({
+		username: UsernameSchema,
+		name: NameSchema,
+		password: PasswordSchema,
+		confirmPassword: PasswordSchema,
+		agreeToTermsOfServiceAndPrivacyPolicy: z.boolean({
+			required_error:
+				'You must agree to the terms of service and privacy policy',
+		}),
+		remember: z.boolean().optional(),
+		redirectTo: z.string().optional(),
+	})
+	.superRefine(({ confirmPassword, password }, ctx) => {
+		if (confirmPassword !== password) {
+			ctx.addIssue({
+				path: ['confirmPassword'],
+				code: 'custom',
+				message: 'The passwords must match',
+			})
+		}
+	})

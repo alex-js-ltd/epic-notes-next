@@ -1,12 +1,12 @@
 'use client'
 
+import { Field, TextareaField } from '@/app/comps/forms'
 import { useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useFormState } from 'react-dom'
 import { Button } from '@/app/comps/ui/button'
 import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
 import { Label } from '@/app/comps/ui/label'
-import { Input } from '@/app/comps/ui/input'
 import { Textarea } from '@/app/comps/ui/textarea'
 import { StatusButton } from '@/app/comps/ui/status-button'
 import { editNote } from '@/app/utils/actions'
@@ -66,26 +66,22 @@ export default function EditForm({ note }: { note: Note }) {
 				*/}
 				<button type="submit" className="hidden" />
 				<div className="flex flex-col gap-1">
-					<div>
-						<Label htmlFor={fields.title.id}>Title</Label>
-						<Input autoFocus {...conform.input(fields.title)} />
-						<div className="min-h-[32px] px-4 pb-3 pt-1">
-							<ErrorList
-								id={fields.title.errorId}
-								errors={fields.title.errors}
-							/>
-						</div>
-					</div>
-					<div>
-						<Label htmlFor={fields.content.id}>Content</Label>
-						<Textarea {...conform.textarea(fields.content)} />
-						<div className="min-h-[32px] px-4 pb-3 pt-1">
-							<ErrorList
-								id={fields.content.errorId}
-								errors={fields.content.errors}
-							/>
-						</div>
-					</div>
+					<Field
+						labelProps={{ children: 'Title' }}
+						inputProps={{
+							autoFocus: true,
+							...conform.input(fields.title),
+						}}
+						errors={fields.title.errors}
+					/>
+					<TextareaField
+						labelProps={{ children: 'Content' }}
+						textareaProps={{
+							...conform.textarea(fields.content),
+						}}
+						errors={fields.content.errors}
+					/>
+
 					<div>
 						<Label>Images</Label>
 						<ul className="flex flex-col gap-4">

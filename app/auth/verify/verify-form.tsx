@@ -1,19 +1,17 @@
 'use client'
 
+import { Field } from '@/app/comps/forms'
 import { StatusButton } from '@/app/comps/ui/status-button'
-import { ErrorList } from '@/app/comps/error-list'
-import { Label } from '@/app/comps/ui/label'
-import { Input } from '@/app/comps/ui/input'
 import { useSignUp } from '@clerk/nextjs'
 import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
-import { useRouter } from 'next/navigation'
 import { VerifySchema } from '@/app/utils/schemas'
-import { Spacer } from './spacer'
+import { useRouter } from 'next/navigation'
 
 export default function VerifyForm() {
-	const { signUp, setActive } = useSignUp()
 	const router = useRouter()
+	const { signUp, setActive } = useSignUp()
+
 	const [form, fields] = useForm({
 		id: 'verify-form',
 		constraint: getFieldsetConstraint(VerifySchema),
@@ -48,38 +46,26 @@ export default function VerifyForm() {
 			}
 			if (completeSignUp.status === 'complete') {
 				await setActive({ session: completeSignUp.createdSessionId })
+				router.push('/auth/onboarding')
 			}
 		} catch (err: unknown) {
 			console.error(JSON.stringify(err, null, 2))
 		}
 	}
 	return (
-		<div className="container flex flex-col justify-center pb-32 pt-20">
-			<div className="text-center">
-				<h1 className="text-h1">Check your email</h1>
-				<p className="mt-3 text-body-md text-muted-foreground">
-					We've sent you a code to verify your email address.
-				</p>
-			</div>
+		<form className="flex-1" {...form.props} action={action}>
+			<Field
+				labelProps={{
+					htmlFor: fields.code.id,
+					children: 'Code',
+				}}
+				inputProps={{ ...conform.input(fields.code), autoFocus: true }}
+				errors={fields.code.errors}
+			/>
 
-			<Spacer size="xs" />
-
-			<div className="mx-auto flex w-72 max-w-full flex-col justify-center gap-1">
-				<div className="flex w-full gap-2">
-					<form className="flex-1" {...form.props} action={action}>
-						<Label htmlFor={fields.code.id}>Code</Label>
-						<Input autoFocus {...conform.input(fields.code)} />
-
-						<div className="min-h-[32px] px-4 pb-3 pt-1">
-							<ErrorList id={fields.code.errorId} errors={fields.code.errors} />
-						</div>
-
-						<StatusButton className="w-full" type="submit">
-							Submit
-						</StatusButton>
-					</form>
-				</div>
-			</div>
-		</div>
+			<StatusButton className="w-full" type="submit">
+				Submit
+			</StatusButton>
+		</form>
 	)
 }
