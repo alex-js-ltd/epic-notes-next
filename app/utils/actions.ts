@@ -184,9 +184,9 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		},
 	})
 
-	revalidatePath(`/users/${username}/notes/${noteId}/edit`)
-	revalidatePath(`/users/${username}/notes/${noteId}`)
-	redirect(`/users/${username}/notes/${noteId}`)
+	revalidatePath(`/users/${username}/notes/${updatedNote.id}/edit`)
+	revalidatePath(`/users/${username}/notes/${updatedNote.id}`)
+	redirect(`/users/${username}/notes/${updatedNote.id}`)
 }
 
 export async function onBoardUser(formData: FormData) {
@@ -211,5 +211,11 @@ export async function onBoardUser(formData: FormData) {
 		async: true,
 	})
 
-	console.log(submission)
+	if (!submission.value) {
+		return { status: 'error', error: submission.error }
+	}
+
+	const { redirectTo } = submission.value
+
+	redirect(`${redirectTo}`)
 }

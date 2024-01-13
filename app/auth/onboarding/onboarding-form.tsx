@@ -7,12 +7,13 @@ import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { OnboardingFormSchema } from '@/app/utils/schemas'
 import { onBoardUser } from '@/app/utils/actions'
+import type { User } from '@clerk/nextjs/server'
 
-export default function OnboaringForm() {
+export default function OnboaringForm({ user }: { user: User }) {
 	const [form, fields] = useForm({
 		id: 'onboarding-form',
 		constraint: getFieldsetConstraint(OnboardingFormSchema),
-		defaultValue: { redirectTo: '' },
+		defaultValue: { redirectTo: '/users', id: user.id },
 
 		onValidate({ formData }) {
 			return parse(formData, { schema: OnboardingFormSchema })
@@ -86,6 +87,12 @@ export default function OnboaringForm() {
 			/>
 
 			<input {...conform.input(fields.redirectTo, { type: 'hidden' })} />
+
+			<input
+				value={user?.id}
+				{...conform.input(fields.id, { type: 'hidden' })}
+			/>
+
 			<ErrorList errors={form.errors} id={form.errorId} />
 
 			<div className="flex items-center justify-between gap-6">

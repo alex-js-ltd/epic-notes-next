@@ -10,22 +10,21 @@ export async function getPasswordHash(password: string) {
 }
 
 export async function signup({
+	id,
 	username,
 	password,
 	name,
 }: {
+	id: User['id']
 	username: User['username']
 	name: User['name']
 	password: string
 }) {
 	const hashedPassword = await getPasswordHash(password)
 
-	const { userId } = auth()
-	console.log(userId)
-	invariant(userId)
 	const updateUser = await prisma.user.update({
 		where: {
-			id: userId,
+			id,
 		},
 		data: {
 			name,
