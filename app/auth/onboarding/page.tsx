@@ -7,6 +7,7 @@ export default async function OnboaringRoute() {
 	const user = await currentUser()
 
 	const email = user?.emailAddresses[0].emailAddress
+
 	return (
 		<div className="container flex min-h-full flex-col justify-center pb-32 pt-20">
 			<div className="mx-auto w-full max-w-lg">
@@ -17,7 +18,7 @@ export default async function OnboaringRoute() {
 					</p>
 				</div>
 				<Spacer size="xs" />
-				{user ? <OnboaringForm user={user} /> : null}
+				{email ? <OnboaringForm email={email} /> : null}
 			</div>
 		</div>
 	)

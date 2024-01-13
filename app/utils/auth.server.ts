@@ -10,12 +10,12 @@ export async function getPasswordHash(password: string) {
 }
 
 export async function signup({
-	id,
+	email,
 	username,
 	password,
 	name,
 }: {
-	id: User['id']
+	email: User['email']
 	username: User['username']
 	name: User['name']
 	password: string
@@ -24,7 +24,7 @@ export async function signup({
 
 	const updateUser = await prisma.user.update({
 		where: {
-			id,
+			email,
 		},
 		data: {
 			name,
