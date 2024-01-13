@@ -215,7 +215,7 @@ export async function onBoardUser(formData: FormData) {
 		return { status: 'error', error: submission.error }
 	}
 
-	const { redirectTo } = submission.value
+	const { username } = submission.value
 
-	redirect(`${redirectTo}`)
+	redirect(`/users/${username}`)
 }

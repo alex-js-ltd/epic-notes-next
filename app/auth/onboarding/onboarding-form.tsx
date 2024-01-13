@@ -12,7 +12,7 @@ export default function OnboaringForm({ email }: { email: string }) {
 	const [form, fields] = useForm({
 		id: 'onboarding-form',
 		constraint: getFieldsetConstraint(OnboardingFormSchema),
-		defaultValue: { redirectTo: '/users', email },
+		defaultValue: { email },
 
 		onValidate({ formData }) {
 			return parse(formData, { schema: OnboardingFormSchema })
