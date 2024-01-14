@@ -3,7 +3,7 @@ import Link from 'next/link'
 import ActiveLink from '@/app/comps/ui/active-link'
 import { loadOwner } from '@/app/utils/actions'
 import { auth } from '@clerk/nextjs'
-import { Icon } from '@/app/comps/ui/icon'
+import Icon from '@/app/comps/ui/icon'
 
 export default async function NotesLayout({
 	params: { username },
