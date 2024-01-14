@@ -6,7 +6,6 @@ import { cn } from './utils/misc'
 import { loadUserInfo } from './utils/actions'
 import { HoneypotProvider } from './comps/honeypot'
 import { ClerkProvider } from '@clerk/nextjs'
-
 import './globals.css'
 
 const nunito = Nunito_Sans({
