@@ -31,7 +31,7 @@ export function imageHasId(
 }
 
 export const NoteEditorSchema = z.object({
-	id: z.string().min(1),
+	id: z.string().optional(),
 	title: z.string().min(titleMinLength).max(titleMaxLength),
 	content: z.string().min(contentMinLength).max(contentMaxLength),
 	images: z.array(ImageFieldsetSchema).max(5).optional(),

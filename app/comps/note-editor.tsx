@@ -28,7 +28,7 @@ import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { ErrorList } from './error-list'
 
 export default function NoteEditor({ note }: { note?: Note }) {
-	const [_state, formAction] = useFormState(editNote, null)
+	const [_state, dispatch] = useFormState(editNote, null)
 
 	const [form, fields] = useForm({
 		id: 'note-editor',
@@ -59,7 +59,9 @@ export default function NoteEditor({ note }: { note?: Note }) {
 			<form
 				className="flex h-full flex-col gap-y-4 overflow-y-auto overflow-x-hidden px-10 pb-28 pt-12"
 				{...form.props}
-				action={formAction}
+				action={dispatch}
+				encType={undefined}
+				method={undefined}
 			>
 				{/*
 					This hidden submit button is here to ensure that when the user hits
@@ -116,15 +118,16 @@ export default function NoteEditor({ note }: { note?: Note }) {
 
 				<input type="hidden" {...conform.input(fields.id)} />
 				<input type="hidden" name="username" value={params.username} />
+
+				<div className={floatingToolbarClassName}>
+					<Button form={form.id} variant="destructive" type="reset">
+						Reset
+					</Button>
+					<StatusButton form={form.id} type="submit">
+						Submit
+					</StatusButton>
+				</div>
 			</form>
-			<div className={floatingToolbarClassName}>
-				<Button form={form.id} variant="destructive" type="reset">
-					Reset
-				</Button>
-				<StatusButton form={form.id} type="submit">
-					Submit
-				</StatusButton>
-			</div>
 		</div>
 	)
 }
