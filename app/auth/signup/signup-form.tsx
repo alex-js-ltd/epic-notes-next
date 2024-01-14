@@ -1,8 +1,8 @@
 'use client'
 
-import { Field } from '@/app/comps/forms'
-import { Button } from '@/app/comps/ui/button'
-import { HoneypotInputs } from '@/app/comps/honeypot'
+import { Field } from '@/app/components/forms'
+import { Button } from '@/app/components/ui/button'
+import { HoneypotInputs } from '@/app/components/honeypot'
 import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { SignupSchema } from '@/app/utils/schemas'

@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { Button } from '@/app/comps/ui/button'
-import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
+import { Button } from '@/app/components/ui/button'
+import { floatingToolbarClassName } from '@/app/components/floating-toolbar'
 import { loadNote, removeNote } from '@/app/utils/actions'
 import { getNoteImgSrc } from '@/app/utils/misc'
 

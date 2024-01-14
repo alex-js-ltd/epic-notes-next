@@ -1,9 +1,11 @@
+'use server'
 import type { PropsWithChildren } from 'react'
 import Link from 'next/link'
-import ActiveLink from '@/app/comps/ui/active-link'
+import ActiveLink from '@/app/components/ui/active-link'
 import { loadOwner } from '@/app/utils/actions'
 import { auth } from '@clerk/nextjs'
-import Icon from '@/app/comps/ui/icon'
+import Image from 'next/image'
+import { Icon } from '@/app/components/ui/icon'
 
 export default async function NotesLayout({
 	params: { username },
@@ -23,7 +25,10 @@ export default async function NotesLayout({
 			<div className="grid w-full grid-cols-4 bg-muted pl-2 md:container md:mx-2 md:rounded-3xl md:pr-0">
 				<div className="relative col-span-1">
 					<div className="absolute inset-0 flex flex-col">
-						<Link href=".." className="pb-4 pl-8 pr-4 pt-12">
+						<Link
+							href={`/users/${data.owner.username}`}
+							className="pb-4 pl-8 pr-4 pt-12"
+						>
 							<h1 className="text-base font-bold md:text-lg lg:text-left lg:text-2xl">
 								{ownerDisplayName}'s Notes
 							</h1>
@@ -35,7 +40,7 @@ export default async function NotesLayout({
 										href={`/users/${data.owner.username}/notes/new`}
 										className={navLinkDefaultClassName}
 									>
-										<Icon name="plus">New Note</Icon>
+										<Icon name="plus" />
 									</ActiveLink>
 								</li>
 							) : null}

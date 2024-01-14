@@ -1,8 +1,8 @@
 'use client'
 
-import { Field, CheckboxField, ErrorList } from '@/app/comps/forms'
-import { StatusButton } from '@/app/comps/ui/status-button'
-import { HoneypotInputs } from '@/app/comps/honeypot'
+import { Field, CheckboxField, ErrorList } from '@/app/components/forms'
+import { StatusButton } from '@/app/components/ui/status-button'
+import { HoneypotInputs } from '@/app/components/honeypot'
 import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { OnboardingFormSchema } from '@/app/utils/schemas'

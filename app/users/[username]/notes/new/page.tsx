@@ -1,4 +1,4 @@
-import NoteEditor from '@/app/comps/note-editor'
+import NoteEditor from '@/app/components/note-editor'
 export default function NewNoteRoute() {
 	return <NoteEditor />
 }

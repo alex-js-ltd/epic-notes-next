@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Spacer } from '@/app/comps/spacer'
+import { Spacer } from '@/app/components/spacer'
 import OnboaringForm from './onboarding-form'
 import { currentUser } from '@clerk/nextjs'
 

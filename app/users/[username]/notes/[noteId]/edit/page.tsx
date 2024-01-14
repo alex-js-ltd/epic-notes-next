@@ -1,5 +1,5 @@
 import { loadNote } from '@/app/utils/actions'
-import NoteEditor from '@/app/comps/note-editor'
+import NoteEditor from '@/app/components/note-editor'
 
 export default async function Page({
 	params,

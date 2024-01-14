@@ -1,7 +1,7 @@
 'use client'
 
-import { Field } from '@/app/comps/forms'
-import { StatusButton } from '@/app/comps/ui/status-button'
+import { Field } from '@/app/components/forms'
+import { StatusButton } from '@/app/components/ui/status-button'
 import { useSignUp } from '@clerk/nextjs'
 import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'

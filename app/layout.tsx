@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Nunito_Sans } from 'next/font/google'
 import { cn } from './utils/misc'
 import { loadUserInfo } from './utils/actions'
-import { HoneypotProvider } from './comps/honeypot'
+import { HoneypotProvider } from './components/honeypot'
 import { ClerkProvider } from '@clerk/nextjs'
 
 import './globals.css'
@@ -48,6 +48,7 @@ async function RootLayout({ children }: { children: ReactNode }) {
 						<div className="font-light">epic</div>
 						<div className="font-bold">notes</div>
 					</Link>
+
 					<p>Built with ♥️ by {data.username}</p>
 				</div>
 				<div className="h-5" />

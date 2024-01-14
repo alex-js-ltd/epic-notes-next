@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Spacer } from '@/app/comps/spacer'
+import { Spacer } from '@/app/components/spacer'
 import VerifyForm from './verify-form'
 
 export default function VerifyRoute() {
