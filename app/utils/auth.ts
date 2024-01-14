@@ -1,8 +1,6 @@
-import { type Password, type User } from '@prisma/client'
+import { type User } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { prisma } from './db'
-import { auth, currentUser } from '@clerk/nextjs'
-import invariant from 'tiny-invariant'
 
 export async function getPasswordHash(password: string) {
 	const hash = await bcrypt.hash(password, 10)

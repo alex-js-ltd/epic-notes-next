@@ -11,10 +11,10 @@ import {
 	OnboardingFormSchema,
 } from './schemas'
 import { parse } from '@conform-to/zod'
-import { honeypot, checkHoneypot } from '@/app/utils/honeypot.server'
+import { honeypot } from '@/app/utils/honeypot.server'
 import { prisma } from '@/app/utils/db'
 import { createId as cuid } from '@paralleldrive/cuid2'
-import { signup } from '@/app/utils/auth.server'
+import { signup } from '@/app/utils/auth'
 import { z } from 'zod'
 
 export async function loadUserInfo() {

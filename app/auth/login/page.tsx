@@ -8,8 +8,11 @@ import { Spacer } from '@/app/comps/spacer'
 import { StatusButton } from '@/app/comps/ui/status-button'
 import Link from 'next/link'
 import { LoginFormSchema } from '@/app/utils/schemas'
+import { useSignIn } from '@clerk/nextjs'
 
 export default function LoginPage() {
+	const { isLoaded, signIn, setActive } = useSignIn()
+
 	const [form, fields] = useForm({
 		id: 'login-form',
 		constraint: getFieldsetConstraint(LoginFormSchema),
@@ -20,6 +23,33 @@ export default function LoginPage() {
 		},
 		shouldRevalidate: 'onBlur',
 	})
+
+	async function onSubmit(formData: FormData) {
+		if (!isLoaded) return
+
+		const submission = parse(formData, { schema: LoginFormSchema })
+
+		if (!submission.value || submission.intent !== 'submit') {
+			return submission
+		}
+
+		const { email, password } = submission.value
+
+		await signIn
+			.create({
+				identifier: email,
+				password,
+			})
+			.then(result => {
+				if (result.status === 'complete') {
+					console.log(result)
+					setActive({ session: result.createdSessionId })
+				} else {
+					console.log(result)
+				}
+			})
+			.catch(err => console.error('error', err.errors[0].longMessage))
+	}
 
 	return (
 		<div className="flex min-h-full flex-col justify-center pb-32 pt-20">
@@ -37,13 +67,13 @@ export default function LoginPage() {
 						<form {...form.props}>
 							<HoneypotInputs />
 							<Field
-								labelProps={{ children: 'Username' }}
+								labelProps={{ children: 'Email' }}
 								inputProps={{
-									...conform.input(fields.username),
+									...conform.input(fields.email),
 									autoFocus: true,
 									className: 'lowercase',
 								}}
-								errors={fields.username.errors}
+								errors={fields.email.errors}
 							/>
 
 							<Field

@@ -108,7 +108,7 @@ export const OnboardingFormSchema = z
 	})
 
 export const LoginFormSchema = z.object({
-	username: UsernameSchema,
+	email: EmailSchema,
 	password: PasswordSchema,
 	redirectTo: z.string().optional(),
 	remember: z.boolean().optional(),
