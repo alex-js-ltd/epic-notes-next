@@ -1,5 +1,5 @@
-import { loadNote, loadUser } from '@/app/utils/actions'
-import EditForm from '@/app/comps/edit-form'
+import { loadNote } from '@/app/utils/actions'
+import NoteEditor from '@/app/comps/note-editor'
 
 export default async function Page({
 	params,
@@ -8,5 +8,5 @@ export default async function Page({
 }) {
 	const data = await loadNote(params.noteId)
 
-	return <EditForm note={data.note} />
+	return <NoteEditor note={data.note} />
 }

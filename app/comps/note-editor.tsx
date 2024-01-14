@@ -27,7 +27,7 @@ import { getFieldsetConstraint, parse } from '@conform-to/zod'
 
 import { ErrorList } from './error-list'
 
-export default function EditForm({ note }: { note: Note }) {
+export default function NoteEditor({ note }: { note?: Note }) {
 	const [_state, formAction] = useFormState(editNote, null)
 
 	const [form, fields] = useForm({
@@ -38,19 +38,21 @@ export default function EditForm({ note }: { note: Note }) {
 			return parse(formData, { schema: NoteEditorSchema })
 		},
 		defaultValue: {
-			id: note.id,
-			title: note.title,
-			content: note.content,
+			id: note?.id,
+			title: note?.title,
+			content: note?.content,
 			images: note?.images?.length ? note.images : [{}],
 		},
 
-		onSubmit(event, { submission }) {
-			// event.preventDefault()
-		},
+		// onSubmit(event, { submission }) {
+		// 	// event.preventDefault()
+		// },
 	})
 	const imageList = useFieldList(form.ref, fields.images)
 
 	const params = useParams<{ username: string }>()
+
+	console.log('params', params)
 
 	return (
 		<div className="absolute inset-0">

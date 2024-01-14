@@ -3,7 +3,6 @@ import Link from 'next/link'
 import ActiveLink from '@/app/comps/ui/active-link'
 import { loadOwner } from '@/app/utils/actions'
 import { auth } from '@clerk/nextjs'
-import { cn } from '@/app/utils/misc'
 import { Icon } from '@/app/comps/ui/icon'
 
 export default async function NotesLayout({
@@ -34,7 +33,7 @@ export default async function NotesLayout({
 								<li className="p-1 pr-0">
 									<ActiveLink
 										href={`/users/${data.owner.username}/notes/new`}
-										className={cn(navLinkDefaultClassName, 'flex items-center')}
+										className={navLinkDefaultClassName}
 									>
 										<Icon name="plus">New Note</Icon>
 									</ActiveLink>
