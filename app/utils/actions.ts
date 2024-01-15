@@ -41,7 +41,7 @@ export async function loadUser(username: string) {
 	invariant(user, `No user with the username ${username} exists`)
 
 	return {
-		user: { id: user.id, name: user?.name, username: user?.username },
+		user,
 	}
 }
 
@@ -217,8 +217,6 @@ export async function onBoardUser(formData: FormData) {
 		return { status: 'error', error: submission.error }
 	}
 
-	const { username } = submission.value
-
 	redirect(`/users`)
 }
 
@@ -250,8 +248,6 @@ export async function searchUsers(_prevState: unknown, formData: FormData) {
 		imageId: image?.id ?? null,
 		...rest,
 	}))
-
-	console.log(users)
 
 	const result = UserSearchResultsSchema.safeParse(users)
 
