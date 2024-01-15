@@ -10,7 +10,6 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@clerk/clerk-js": "^4.68.4",
     "@clerk/nextjs": "^4.29.2",
     "@conform-to/react": "^0.9.1",
     "@conform-to/zod": "^0.9.1",

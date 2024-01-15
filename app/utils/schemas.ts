@@ -85,7 +85,7 @@ export const VerifySchema = z.object({
 
 export const OnboardingFormSchema = z
 	.object({
-		email: EmailSchema,
+		id: z.string(),
 		username: UsernameSchema,
 		name: NameSchema,
 		password: PasswordSchema,

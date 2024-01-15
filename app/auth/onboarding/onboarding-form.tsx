@@ -8,11 +8,11 @@ import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { OnboardingFormSchema } from '@/app/utils/schemas'
 import { onBoardUser } from '@/app/utils/actions'
 
-export default function OnboaringForm({ email }: { email: string }) {
+export default function OnboaringForm({ userId }: { userId: string }) {
 	const [form, fields] = useForm({
 		id: 'onboarding-form',
 		constraint: getFieldsetConstraint(OnboardingFormSchema),
-		defaultValue: { email },
+		defaultValue: { id: userId },
 
 		onValidate({ formData }) {
 			return parse(formData, { schema: OnboardingFormSchema })
@@ -87,10 +87,7 @@ export default function OnboaringForm({ email }: { email: string }) {
 
 			<input {...conform.input(fields.redirectTo, { type: 'hidden' })} />
 
-			<input
-				value={email}
-				{...conform.input(fields.email, { type: 'hidden' })}
-			/>
+			<input value={userId} {...conform.input(fields.id, { type: 'hidden' })} />
 
 			<ErrorList errors={form.errors} id={form.errorId} />
 

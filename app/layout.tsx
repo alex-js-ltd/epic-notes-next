@@ -8,6 +8,8 @@ import { HoneypotProvider } from './comps/honeypot'
 import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 
+import { SignOutButton } from '@clerk/nextjs'
+
 const nunito = Nunito_Sans({
 	weight: ['400', '700'],
 	style: ['normal', 'italic'],

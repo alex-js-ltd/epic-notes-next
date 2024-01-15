@@ -1,6 +1,7 @@
 import { type User } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { prisma } from './db'
+import { clerkClient } from '@clerk/nextjs/server'
 
 export async function getPasswordHash(password: string) {
 	const hash = await bcrypt.hash(password, 10)
@@ -8,12 +9,12 @@ export async function getPasswordHash(password: string) {
 }
 
 export async function signup({
-	email,
+	id,
 	username,
 	password,
 	name,
 }: {
-	email: User['email']
+	id: User['id']
 	username: User['username']
 	name: User['name']
 	password: string
@@ -22,7 +23,7 @@ export async function signup({
 
 	const updateUser = await prisma.user.update({
 		where: {
-			email,
+			id,
 		},
 		data: {
 			name,
@@ -39,6 +40,10 @@ export async function signup({
 			},
 		},
 	})
+
+	const updateClerk = await clerkClient.users.updateUser(id, { password })
+
+	console.log(updateClerk)
 
 	return updateUser
 }

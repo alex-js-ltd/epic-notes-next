@@ -9,8 +9,10 @@ import { StatusButton } from '@/app/comps/ui/status-button'
 import Link from 'next/link'
 import { LoginFormSchema } from '@/app/utils/schemas'
 import { useSignIn } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
+	const router = useRouter()
 	const { isLoaded, signIn, setActive } = useSignIn()
 
 	const [form, fields] = useForm({
@@ -24,7 +26,7 @@ export default function LoginPage() {
 		shouldRevalidate: 'onBlur',
 	})
 
-	async function onSubmit(formData: FormData) {
+	async function action(formData: FormData) {
 		if (!isLoaded) return
 
 		const submission = parse(formData, { schema: LoginFormSchema })
@@ -35,20 +37,19 @@ export default function LoginPage() {
 
 		const { email, password } = submission.value
 
-		await signIn
-			.create({
+		try {
+			const result = await signIn.create({
 				identifier: email,
 				password,
 			})
-			.then(result => {
-				if (result.status === 'complete') {
-					console.log(result)
-					setActive({ session: result.createdSessionId })
-				} else {
-					console.log(result)
-				}
-			})
-			.catch(err => console.error('error', err.errors[0].longMessage))
+
+			if (result.status === 'complete') {
+				setActive({ session: result.createdSessionId })
+				router.push('/')
+			}
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	return (
@@ -64,7 +65,7 @@ export default function LoginPage() {
 
 				<div>
 					<div className="mx-auto w-full max-w-md px-8">
-						<form {...form.props}>
+						<form {...form.props} action={action}>
 							<HoneypotInputs />
 							<Field
 								labelProps={{ children: 'Email' }}
@@ -116,13 +117,7 @@ export default function LoginPage() {
 								</StatusButton>
 							</div>
 						</form>
-						{/* <div className="mt-5 flex flex-col gap-5 border-b-2 border-t-2 border-border py-3">
-							<ProviderConnectionForm
-								type="Login"
-								providerName="github"
-								redirectTo={redirectTo}
-							/>
-						</div> */}
+
 						<div className="flex items-center justify-center gap-2 pt-6">
 							<span className="text-muted-foreground">New here?</span>
 							<Link href="/auth/signup">Create an account</Link>

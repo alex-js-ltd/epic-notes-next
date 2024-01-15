@@ -1,12 +1,14 @@
 import type { Metadata } from 'next'
 import { Spacer } from '@/app/comps/spacer'
 import OnboaringForm from './onboarding-form'
-import { currentUser } from '@clerk/nextjs'
+import { currentUser, auth } from '@clerk/nextjs'
 
 export default async function OnboaringRoute() {
 	const user = await currentUser()
 
 	const email = user?.emailAddresses[0].emailAddress
+
+	const { userId }: { userId: string | null } = auth()
 
 	return (
 		<div className="container flex min-h-full flex-col justify-center pb-32 pt-20">
@@ -18,7 +20,8 @@ export default async function OnboaringRoute() {
 					</p>
 				</div>
 				<Spacer size="xs" />
-				{email ? <OnboaringForm email={email} /> : null}
+
+				{userId ? <OnboaringForm userId={userId} /> : null}
 			</div>
 		</div>
 	)
