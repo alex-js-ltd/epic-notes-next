@@ -6,6 +6,7 @@ import { Spacer } from '@/app/comps/spacer'
 import { getLoggedInUser } from '@/app/utils/auth'
 import { Button } from '@/app/comps/ui/button'
 import Icon from '@/app/comps/ui/_icon'
+import { SignOutButton } from '@clerk/nextjs'
 
 export default async function ProfileRoute({
 	params: { username },
@@ -43,12 +44,14 @@ export default async function ProfileRoute({
 					</div>
 					<p className="mt-2 text-center text-muted-foreground">Joined {}</p>
 					{isLoggedInUser ? (
-						<form className="mt-3" action={signout}>
-							<Button type="submit" variant="link" size="pill">
-								<Icon name="exit" className="scale-125 max-md:scale-150">
-									Logout
-								</Icon>
-							</Button>
+						<form className="mt-3">
+							<SignOutButton>
+								<Button type="submit" variant="link" size="pill">
+									<Icon name="exit" className="scale-125 max-md:scale-150">
+										Logout
+									</Icon>
+								</Button>
+							</SignOutButton>
 						</form>
 					) : null}
 					<div className="mt-10 flex gap-4">
