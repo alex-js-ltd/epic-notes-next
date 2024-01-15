@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Nunito_Sans } from 'next/font/google'
 import { cn, getUserImgSrc } from './utils/misc'
 import { loadUserInfo } from './utils/actions'
-import { getUser } from './utils/auth'
+import { getLoggedInUser } from './utils/auth'
 import { HoneypotProvider } from './comps/honeypot'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Button } from './comps/ui/button'
@@ -18,7 +18,7 @@ const nunito = Nunito_Sans({
 })
 
 async function RootLayout({ children }: { children: ReactNode }) {
-	const user = await getUser()
+	const user = await getLoggedInUser()
 
 	return (
 		<html

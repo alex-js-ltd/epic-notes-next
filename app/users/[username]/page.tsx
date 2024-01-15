@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { loadUser } from '@/app/utils/actions'
+import { signout } from '@/app/utils/auth'
 import { getUserImgSrc } from '@/app/utils/misc'
 import { Spacer } from '@/app/comps/spacer'
-import { getUser } from '@/app/utils/auth'
+import { getLoggedInUser } from '@/app/utils/auth'
 import { Button } from '@/app/comps/ui/button'
 import Icon from '@/app/comps/ui/_icon'
-import { SignOutButton } from '@clerk/nextjs'
 
 export default async function ProfileRoute({
 	params: { username },
@@ -15,7 +15,7 @@ export default async function ProfileRoute({
 	const data = await loadUser(username)
 	const user = data.user
 	const userDisplayName = user.name ?? user.username
-	const loggedInUser = await getUser()
+	const loggedInUser = await getLoggedInUser()
 	const isLoggedInUser = data.user.id === loggedInUser?.id
 
 	return (
@@ -43,14 +43,12 @@ export default async function ProfileRoute({
 					</div>
 					<p className="mt-2 text-center text-muted-foreground">Joined {}</p>
 					{isLoggedInUser ? (
-						<form className="mt-3">
-							<SignOutButton>
-								<Button type="submit" variant="link" size="pill">
-									<Icon name="exit" className="scale-125 max-md:scale-150">
-										Logout
-									</Icon>
-								</Button>
-							</SignOutButton>
+						<form className="mt-3" action={signout}>
+							<Button type="submit" variant="link" size="pill">
+								<Icon name="exit" className="scale-125 max-md:scale-150">
+									Logout
+								</Icon>
+							</Button>
 						</form>
 					) : null}
 					<div className="mt-10 flex gap-4">
