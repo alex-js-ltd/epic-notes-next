@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 
 export default function SignupForm() {
 	const router = useRouter()
-	const { signUp } = useSignUp()
+	const { isLoaded, signUp } = useSignUp()
 
 	const [form, fields] = useForm({
 		id: 'signup-form',
@@ -26,7 +26,7 @@ export default function SignupForm() {
 	})
 
 	async function action(formData: FormData) {
-		if (!signUp) return
+		if (!isLoaded) return
 
 		const submission = parse(formData, { schema: SignupSchema })
 
