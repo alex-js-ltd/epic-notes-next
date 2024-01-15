@@ -44,7 +44,7 @@ export default function LoginForm() {
 
 			if (result.status === 'complete') {
 				setActive({ session: result.createdSessionId })
-				router.push('/')
+				router.push('/users')
 			}
 		} catch (error) {
 			console.log(error)

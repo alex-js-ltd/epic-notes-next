@@ -218,7 +218,7 @@ export async function onBoardUser(formData: FormData) {
 
 	const { username } = submission.value
 
-	redirect(`/users/${username}`)
+	redirect(`/users`)
 }
 
 export async function searchUsers(_prevState: unknown, formData: FormData) {
