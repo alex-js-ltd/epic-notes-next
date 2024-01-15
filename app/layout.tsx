@@ -2,13 +2,13 @@ import type { ReactNode } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Nunito_Sans } from 'next/font/google'
-import { cn } from './utils/misc'
+import { cn, getUserImgSrc } from './utils/misc'
 import { loadUserInfo } from './utils/actions'
+import { getUser } from './utils/auth'
 import { HoneypotProvider } from './comps/honeypot'
 import { ClerkProvider } from '@clerk/nextjs'
+import { Button } from './comps/ui/button'
 import './globals.css'
-
-import { SignOutButton } from '@clerk/nextjs'
 
 const nunito = Nunito_Sans({
 	weight: ['400', '700'],
@@ -19,6 +19,8 @@ const nunito = Nunito_Sans({
 
 async function RootLayout({ children }: { children: ReactNode }) {
 	const data = await loadUserInfo()
+
+	const user = await getUser()
 
 	return (
 		<html
@@ -31,14 +33,37 @@ async function RootLayout({ children }: { children: ReactNode }) {
 			</head>
 			<body className="flex h-full flex-col justify-between bg-background text-foreground">
 				<header className="container mx-auhref py-6">
-					<nav className="flex justify-between">
+					<nav className="flex items-center justify-between gap-4 sm:gap-6">
 						<Link href="/">
 							<div className="font-light">epic</div>
 							<div className="font-bold">notes</div>
 						</Link>
-						<Link className="underline" href="/auth/signup">
-							Signup
-						</Link>
+
+						<div className="flex items-center gap-10">
+							{user ? (
+								<div className="flex items-center gap-2">
+									<Button asChild variant="secondary">
+										<Link
+											href={`/users/${user?.username}`}
+											className="flex items-center gap-2"
+										>
+											<img
+												className="h-8 w-8 rounded-full object-cover"
+												alt={user.name ?? undefined}
+												src={getUserImgSrc(user.image?.id)}
+											/>
+											<span className="hidden text-body-sm font-bold sm:block">
+												{user.name ?? user.username}
+											</span>
+										</Link>
+									</Button>
+								</div>
+							) : (
+								<Button asChild variant="default" size="sm">
+									<Link href="/auth/login">Log In</Link>
+								</Button>
+							)}
+						</div>
 					</nav>
 				</header>
 

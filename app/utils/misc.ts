@@ -67,3 +67,9 @@ export function typedBoolean<ValueType>(
 export function getNoteImgSrc(imageId: string) {
 	return `/api/images/${imageId}`
 }
+
+const userFallback = '/img/user.png'
+
+export function getUserImgSrc(imageId?: string | null) {
+	return imageId ? `/api/user-images/${imageId}` : userFallback
+}

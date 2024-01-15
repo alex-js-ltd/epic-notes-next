@@ -1,7 +1,10 @@
+'use server'
+
 import { type User } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { prisma } from './db'
 import { clerkClient } from '@clerk/nextjs/server'
+import { auth } from '@clerk/nextjs'
 import invariant from 'tiny-invariant'
 
 export async function getPasswordHash(password: string) {
@@ -49,7 +52,22 @@ export async function signup({
 		username,
 	})
 
-	console.log(updateClerk)
-
 	return updateUser
+}
+
+export async function getUser() {
+	const { userId } = auth()
+	const user = userId
+		? await prisma.user.findUniqueOrThrow({
+				select: {
+					id: true,
+					name: true,
+					username: true,
+					image: { select: { id: true } },
+				},
+				where: { id: userId },
+		  })
+		: null
+
+	return user
 }
