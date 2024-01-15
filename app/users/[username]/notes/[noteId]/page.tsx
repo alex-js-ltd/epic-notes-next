@@ -3,6 +3,7 @@ import { Button } from '@/app/comps/ui/button'
 import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
 import { loadNote, removeNote } from '@/app/utils/actions'
 import { getNoteImgSrc } from '@/app/utils/misc'
+import { auth } from '@clerk/nextjs'
 
 export default async function NoteRoute({
 	params: { noteId, username },
@@ -12,6 +13,9 @@ export default async function NoteRoute({
 	const data = await loadNote(noteId)
 
 	const deleteNoteWithId = removeNote.bind(null, { noteId, username })
+
+	const { userId } = auth()
+	const isOwner = userId === data.note.ownerId
 
 	return (
 		<div className="absolute inset-0 flex flex-col px-10">
@@ -34,21 +38,23 @@ export default async function NoteRoute({
 					{data.note.content}
 				</p>
 			</div>
-			<div className={floatingToolbarClassName}>
-				<form method="POST" action={deleteNoteWithId}>
-					<Button
-						type="submit"
-						variant="destructive"
-						name="intent"
-						value="delete"
-					>
-						Delete
+			{isOwner ? (
+				<div className={floatingToolbarClassName}>
+					<form method="POST" action={deleteNoteWithId}>
+						<Button
+							type="submit"
+							variant="destructive"
+							name="intent"
+							value="delete"
+						>
+							Delete
+						</Button>
+					</form>
+					<Button asChild>
+						<Link href={`/users/${username}/notes/${noteId}/edit`}>Edit</Link>
 					</Button>
-				</form>
-				<Button asChild>
-					<Link href={`/users/${username}/notes/${noteId}/edit`}>Edit</Link>
-				</Button>
-			</div>
+				</div>
+			) : null}
 		</div>
 	)
 }

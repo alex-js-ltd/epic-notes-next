@@ -4,7 +4,7 @@ export default function Home() {
 			<h1 className="my-8 text-h1">Epic Notes</h1>
 			<p>
 				<span className="inline-flex items-center justify-center gap-2 rounded-xl bg-muted px-8 py-4 text-body-lg text-muted-foreground">
-					<span>Built with the Epic Stack</span>
+					<span>Built with Next 14</span>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						className="inline h-6 w-6"

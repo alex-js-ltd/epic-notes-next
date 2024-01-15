@@ -18,8 +18,6 @@ const nunito = Nunito_Sans({
 })
 
 async function RootLayout({ children }: { children: ReactNode }) {
-	const data = await loadUserInfo()
-
 	const user = await getUser()
 
 	return (
@@ -74,7 +72,7 @@ async function RootLayout({ children }: { children: ReactNode }) {
 						<div className="font-light">epic</div>
 						<div className="font-bold">notes</div>
 					</Link>
-					<p>Built with ♥️ by {data.username}</p>
+					<p>Built with ♥️ by alex</p>
 				</div>
 				<div className="h-5" />
 			</body>

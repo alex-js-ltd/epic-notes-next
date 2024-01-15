@@ -91,6 +91,7 @@ export async function loadNote(noteId: string) {
 				id: i.id,
 				altText: i.altText,
 			})),
+			ownerId: note.ownerId,
 		},
 	}
 }
