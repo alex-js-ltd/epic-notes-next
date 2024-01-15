@@ -113,3 +113,12 @@ export const LoginFormSchema = z.object({
 	redirectTo: z.string().optional(),
 	remember: z.boolean().optional(),
 })
+
+const UserSearchResultSchema = z.object({
+	id: z.string(),
+	username: z.string(),
+	name: z.string().nullable(),
+	imageId: z.string().nullable(),
+})
+
+export const UserSearchResultsSchema = z.array(UserSearchResultSchema)

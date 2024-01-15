@@ -9,6 +9,7 @@ import {
 	imageHasFile,
 	imageHasId,
 	OnboardingFormSchema,
+	UserSearchResultsSchema,
 } from './schemas'
 import { parse } from '@conform-to/zod'
 import { honeypot } from '@/app/utils/honeypot.server'
@@ -218,4 +219,45 @@ export async function onBoardUser(formData: FormData) {
 	const { username } = submission.value
 
 	redirect(`/users/${username}`)
+}
+
+export async function searchUsers(_prevState: unknown, formData: FormData) {
+	const searchTerm = formData.get('search')
+
+	const like = `%${searchTerm ?? ''}%`
+
+	const rawUsers = await prisma.user.findMany({
+		where: {
+			username: {
+				startsWith: like,
+				mode: 'insensitive',
+			},
+		},
+		select: {
+			id: true,
+			username: true,
+			name: true,
+			image: {
+				select: {
+					id: true,
+				},
+			},
+		},
+	})
+
+	const users = rawUsers?.map(({ image, ...rest }) => ({
+		imageId: image?.id ?? null,
+		...rest,
+	}))
+
+	console.log(users)
+
+	const result = UserSearchResultsSchema.safeParse(users)
+
+	if (!result.success) {
+		console.log(result.error.message)
+		return { status: 'error', error: result.error.message }
+	}
+
+	return { status: 'idle', users: result.data }
 }
