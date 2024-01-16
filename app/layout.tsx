@@ -8,6 +8,7 @@ import { getLoggedInUser } from './utils/auth'
 import { HoneypotProvider } from './comps/honeypot'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Button } from './comps/ui/button'
+import { SearchBar } from './comps/search-bar'
 import './globals.css'
 
 const nunito = Nunito_Sans({
@@ -36,6 +37,10 @@ async function RootLayout({ children }: { children: ReactNode }) {
 							<div className="font-light">epic</div>
 							<div className="font-bold">notes</div>
 						</Link>
+
+						<div className="ml-auto max-w-sm flex-1">
+							<SearchBar status="idle" />
+						</div>
 
 						<div className="flex items-center gap-10">
 							{user ? (

@@ -28,6 +28,7 @@ export function SearchBar({
 		<form
 			className="flex flex-wrap items-center justify-center gap-2"
 			onChange={e => autoSubmit && handleFormChange(e.currentTarget)}
+			action="/users"
 		>
 			<div className="flex-1">
 				<Label htmlFor={id} className="sr-only">
