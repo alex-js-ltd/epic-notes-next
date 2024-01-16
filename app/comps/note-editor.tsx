@@ -51,8 +51,6 @@ export default function NoteEditor({ note }: { note?: Note }) {
 
 	const params = useParams<{ username: string }>()
 
-	console.log('params', params)
-
 	return (
 		<div className="absolute inset-0">
 			<form

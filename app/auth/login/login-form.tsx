@@ -52,7 +52,12 @@ export default function LoginForm() {
 	}
 
 	return (
-		<form {...form.props} action={action}>
+		<form
+			{...form.props}
+			action={action}
+			encType={undefined}
+			method={undefined}
+		>
 			<HoneypotInputs />
 			<Field
 				labelProps={{ children: 'Email' }}

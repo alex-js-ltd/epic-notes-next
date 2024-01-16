@@ -54,6 +54,8 @@ export default function SignupForm() {
 			className="mx-auto flex min-w-[368px] max-w-sm flex-col gap-4"
 			{...form.props}
 			action={action}
+			encType={undefined}
+			method={undefined}
 		>
 			<HoneypotInputs />
 

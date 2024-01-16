@@ -25,6 +25,8 @@ export default function OnboaringForm({ userId }: { userId: string }) {
 			className="mx-auto min-w-[368px] max-w-sm"
 			{...form.props}
 			action={onBoardUser}
+			encType={undefined}
+			method={undefined}
 		>
 			<HoneypotInputs />
 			<Field

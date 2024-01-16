@@ -40,7 +40,7 @@ export default async function NoteRoute({
 			</div>
 			{isOwner ? (
 				<div className={floatingToolbarClassName}>
-					<form method="POST" action={deleteNoteWithId}>
+					<form action={deleteNoteWithId}>
 						<Button
 							type="submit"
 							variant="destructive"

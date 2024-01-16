@@ -53,7 +53,13 @@ export default function VerifyForm() {
 		}
 	}
 	return (
-		<form className="flex-1" {...form.props} action={action}>
+		<form
+			className="flex-1"
+			{...form.props}
+			action={action}
+			encType={undefined}
+			method={undefined}
+		>
 			<Field
 				labelProps={{
 					htmlFor: fields.code.id,
