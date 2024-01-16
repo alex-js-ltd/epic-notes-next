@@ -252,7 +252,6 @@ export async function searchUsers(_prevState: unknown, formData: FormData) {
 	const result = UserSearchResultsSchema.safeParse(users)
 
 	if (!result.success) {
-		console.log(result.error.message)
 		return { status: 'error', error: result.error.message }
 	}
 
