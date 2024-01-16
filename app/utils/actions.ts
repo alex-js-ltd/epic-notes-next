@@ -3,7 +3,7 @@
 import os from 'node:os'
 import invariant from 'tiny-invariant'
 import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
+
 import {
 	NoteEditorSchema,
 	imageHasFile,

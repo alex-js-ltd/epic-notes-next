@@ -52,30 +52,32 @@ export default function UsersRoute() {
 			<main>
 				{data?.status === 'idle' ? (
 					data.users && data?.users.length ? (
-						<UserUl>
-							{data.users.map(user => (
-								<li key={user.id}>
-									<Link
-										href={`/users/${user.username}`}
-										className="flex h-36 w-44 flex-col items-center justify-center rounded-lg bg-muted px-5 py-3"
-									>
-										<img
-											alt={user.name ?? user.username}
-											src={getUserImgSrc(user.imageId)}
-											className="h-16 w-16 rounded-full"
-										/>
-										{user.name ? (
-											<span className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-center text-body-md">
-												{user.name}
+						<IsFetching>
+							<ul className="flex w-full flex-wrap items-center justify-center gap-4 delay-200">
+								{data.users.map(user => (
+									<li key={user.id}>
+										<Link
+											href={`/users/${user.username}`}
+											className="flex h-36 w-44 flex-col items-center justify-center rounded-lg bg-muted px-5 py-3"
+										>
+											<img
+												alt={user.name ?? user.username}
+												src={getUserImgSrc(user.imageId)}
+												className="h-16 w-16 rounded-full"
+											/>
+											{user.name ? (
+												<span className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-center text-body-md">
+													{user.name}
+												</span>
+											) : null}
+											<span className="w-full overflow-hidden text-ellipsis text-center text-body-sm text-muted-foreground">
+												{user.username}
 											</span>
-										) : null}
-										<span className="w-full overflow-hidden text-ellipsis text-center text-body-sm text-muted-foreground">
-											{user.username}
-										</span>
-									</Link>
-								</li>
-							))}
-						</UserUl>
+										</Link>
+									</li>
+								))}
+							</ul>
+						</IsFetching>
 					) : (
 						<p>No users found</p>
 					)
@@ -87,17 +89,8 @@ export default function UsersRoute() {
 	)
 }
 
-function UserUl({ children }: { children: React.ReactNode }) {
+function IsFetching({ children }: { children: React.ReactNode }) {
 	const { pending } = useFormStatus()
 
-	return (
-		<ul
-			className={cn(
-				'flex w-full flex-wrap items-center justify-center gap-4 delay-200',
-				{ 'opacity-50': pending },
-			)}
-		>
-			{children}
-		</ul>
-	)
+	return <div className={cn({ 'opacity-50': pending })}>{children}</div>
 }
