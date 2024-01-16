@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { Label } from '@/app/comps/ui/label'
 import { Input } from '@/app/comps/ui/input'
 import { StatusButton } from '@/app/comps/ui/status-button'
-import Icon from '@/app/comps/ui/_icon'
+import { Icon } from '@/app/comps/ui/_icon'
 import { searchUsers } from '@/app/utils/actions'
 
 export default function UsersRoute() {

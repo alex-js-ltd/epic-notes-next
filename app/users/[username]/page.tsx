@@ -1,12 +1,10 @@
 import Link from 'next/link'
 import { loadUser } from '@/app/utils/actions'
-import { signout } from '@/app/utils/auth'
 import { getUserImgSrc } from '@/app/utils/misc'
 import { Spacer } from '@/app/comps/spacer'
 import { getLoggedInUser } from '@/app/utils/auth'
 import { Button } from '@/app/comps/ui/button'
-import Icon from '@/app/comps/ui/_icon'
-import { SignOutButton } from '@clerk/nextjs'
+import { LogoutButton } from '@/app/comps/logout-button'
 
 export default async function ProfileRoute({
 	params: { username },
@@ -43,17 +41,7 @@ export default async function ProfileRoute({
 						<h1 className="text-center text-h2">{userDisplayName}</h1>
 					</div>
 					<p className="mt-2 text-center text-muted-foreground">Joined {}</p>
-					{isLoggedInUser ? (
-						<form className="mt-3">
-							<SignOutButton>
-								<Button type="submit" variant="link" size="pill">
-									<Icon name="exit" className="scale-125 max-md:scale-150">
-										Logout
-									</Icon>
-								</Button>
-							</SignOutButton>
-						</form>
-					) : null}
+					{isLoggedInUser ? <LogoutButton /> : null}
 					<div className="mt-10 flex gap-4">
 						{isLoggedInUser ? (
 							<>
