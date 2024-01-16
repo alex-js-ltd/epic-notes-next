@@ -186,9 +186,7 @@ export async function editNote(_prevState: unknown, formData: FormData) {
 		},
 	})
 
-	revalidatePath(`/users/${username}/notes/${updatedNote.id}/edit`)
-	revalidatePath(`/users/${username}/notes/${updatedNote.id}`)
-	redirect(`/users/${username}/notes/${updatedNote.id}`)
+	return redirect(`/users/${username}/notes/${updatedNote.id}`)
 }
 
 export async function onBoardUser(formData: FormData) {
@@ -217,7 +215,7 @@ export async function onBoardUser(formData: FormData) {
 		return { status: 'error', error: submission.error }
 	}
 
-	redirect(`/users`)
+	return redirect(`/users`)
 }
 
 export async function searchUsers(_prevState: unknown, formData: FormData) {
