@@ -6,8 +6,6 @@ import { prisma } from './db'
 import { clerkClient } from '@clerk/nextjs/server'
 import { auth } from '@clerk/nextjs'
 import invariant from 'tiny-invariant'
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 
 export async function getPasswordHash(password: string) {
 	const hash = await bcrypt.hash(password, 10)
@@ -72,11 +70,4 @@ export async function getLoggedInUser() {
 		: null
 
 	return user
-}
-
-export async function signout() {
-	const { sessionId } = auth()
-	invariant(sessionId, 'no sessionId')
-	const res = await clerkClient.sessions.revokeSession(sessionId)
-	revalidatePath('/')
 }
