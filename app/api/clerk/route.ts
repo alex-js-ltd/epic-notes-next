@@ -39,5 +39,14 @@ export async function POST(request: Request) {
 		}
 	}
 
-	return Response.json({ message: 'cannot create user' })
+	if (payload.type === 'user.deleted') {
+		try {
+			const user = await prisma.user.delete({ where: { id: payload.data.id } })
+			return Response.json({ message: user })
+		} catch (error) {
+			return Response.json({ message: error })
+		}
+	}
+
+	return Response.json({ message: 'cannot sync web hook' })
 }
