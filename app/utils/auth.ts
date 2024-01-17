@@ -47,9 +47,10 @@ export async function signup({
 
 	invariant(username, 'no username')
 
-	const updateClerk = await clerkClient.users.updateUser(id, {
+	await clerkClient.users.updateUser(id, {
 		password,
 		username,
+		firstName: name ?? undefined,
 	})
 
 	return updateUser
