@@ -10,11 +10,9 @@ import { StatusButton } from '@/app/comps/ui/status-button'
 
 export function SearchBar({
 	action,
-	status,
 	autoFocus = false,
 	autoSubmit = false,
 }: {
-	status: 'idle' | 'pending' | 'success' | 'error'
 	autoFocus?: boolean
 	autoSubmit?: boolean
 	action: string | ((formData: FormData) => void)

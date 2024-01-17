@@ -41,7 +41,7 @@ async function RootLayout({ children }: { children: ReactNode }) {
 
 						<View hide={['/users']}>
 							<div className="ml-auto max-w-sm flex-1">
-								<SearchBar status="idle" action="/users" />
+								<SearchBar action="/users" />
 							</div>
 						</View>
 
