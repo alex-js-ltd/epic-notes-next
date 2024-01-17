@@ -25,7 +25,7 @@ import {
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { ErrorList } from './error-list'
 
-type Props = { note?: Awaited<ReturnType<typeof loadNote>>['note'] }
+type Props = Partial<Awaited<ReturnType<typeof loadNote>>>
 
 export default function NoteEditor({ note }: Props) {
 	const [_state, dispatch] = useFormState(editNote, null)
