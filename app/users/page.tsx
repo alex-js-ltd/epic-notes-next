@@ -16,7 +16,12 @@ export default function UsersRoute() {
 		<div className="container mb-48 mt-36 flex flex-col items-center justify-center gap-6">
 			<h1 className="text-h1">Epic Notes Users</h1>
 			<div className="w-full max-w-[700px] ">
-				<SearchBar status={'pending'} autoFocus autoSubmit />
+				<SearchBar
+					status={'pending'}
+					autoFocus
+					autoSubmit={true}
+					action={dispatch}
+				/>
 			</div>
 
 			<main>

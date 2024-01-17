@@ -9,6 +9,7 @@ import { Label } from '@/app/comps/ui/label'
 import { StatusButton } from '@/app/comps/ui/status-button'
 
 export function SearchBar({
+	action,
 	status,
 	autoFocus = false,
 	autoSubmit = false,
@@ -16,6 +17,7 @@ export function SearchBar({
 	status: 'idle' | 'pending' | 'success' | 'error'
 	autoFocus?: boolean
 	autoSubmit?: boolean
+	action: string | ((formData: FormData) => void) | undefined
 }) {
 	const id = useId()
 	const searchParams = useSearchParams()
@@ -28,7 +30,7 @@ export function SearchBar({
 		<form
 			className="flex flex-wrap items-center justify-center gap-2"
 			onChange={e => autoSubmit && handleFormChange(e.currentTarget)}
-			action="/users"
+			action={action}
 		>
 			<div className="flex-1">
 				<Label htmlFor={id} className="sr-only">
