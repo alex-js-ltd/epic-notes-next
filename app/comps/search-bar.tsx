@@ -17,13 +17,14 @@ export function SearchBar({
 	status: 'idle' | 'pending' | 'success' | 'error'
 	autoFocus?: boolean
 	autoSubmit?: boolean
-	action: string | ((formData: FormData) => void) | undefined
+	action: string | ((formData: FormData) => void)
 }) {
 	const id = useId()
 	const searchParams = useSearchParams()
 
 	const handleFormChange = useDebounce((form: HTMLFormElement) => {
-		console.log(form)
+		const formData = new FormData(form)
+		typeof action !== 'string' && action(formData)
 	}, 400)
 
 	return (
