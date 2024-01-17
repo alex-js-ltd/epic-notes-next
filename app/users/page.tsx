@@ -1,9 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { useFormState, useFormStatus } from 'react-dom'
+import { useFormState } from 'react-dom'
 import { ErrorList } from '@/app/comps/forms'
-import { cn, getUserImgSrc } from '@/app/utils/misc'
+import { getUserImgSrc } from '@/app/utils/misc'
 import Link from 'next/link'
 
 import { searchUsers } from '@/app/utils/actions'
@@ -55,10 +55,4 @@ export default function UsersRoute() {
 			</main>
 		</div>
 	)
-}
-
-function IsFetching({ children }: { children: React.ReactNode }) {
-	const { pending } = useFormStatus()
-
-	return <div className={cn({ 'opacity-50': pending })}>{children}</div>
 }
