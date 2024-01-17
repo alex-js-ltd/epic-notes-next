@@ -1,12 +1,13 @@
 'use client'
 
-import { useId } from 'react'
+import { useId, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useDebounce } from '@/app/utils/hooks'
 import { Icon } from '@/app/comps/ui/_icon'
 import { Input } from '@/app/comps/ui/input'
 import { Label } from '@/app/comps/ui/label'
 import { StatusButton } from '@/app/comps/ui/status-button'
+import { useEffectOnce } from 'usehooks-ts'
 
 export function SearchBar({
 	action,
@@ -25,11 +26,22 @@ export function SearchBar({
 		typeof action !== 'string' && action(formData)
 	}, 400)
 
+	const ref = useRef<HTMLFormElement>(null)
+
+	useEffectOnce(() => {
+		const form = ref.current
+
+		if (!form) return
+		const formData = new FormData(form)
+		typeof action !== 'string' && action(formData)
+	})
+
 	return (
 		<form
 			className="flex flex-wrap items-center justify-center gap-2"
 			onChange={e => autoSubmit && handleFormChange(e.currentTarget)}
 			action={action}
+			ref={ref}
 		>
 			<div className="flex-1">
 				<Label htmlFor={id} className="sr-only">
