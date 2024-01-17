@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs'
 import { prisma } from './db'
 import { clerkClient } from '@clerk/nextjs/server'
 import { auth } from '@clerk/nextjs'
-import invariant from 'tiny-invariant'
 
 export async function getPasswordHash(password: string) {
 	const hash = await bcrypt.hash(password, 10)
@@ -45,11 +44,9 @@ export async function signup({
 		},
 	})
 
-	invariant(username, 'no username')
-
 	await clerkClient.users.updateUser(id, {
 		password,
-		username,
+		username: username ?? undefined,
 		firstName: name ?? undefined,
 	})
 
