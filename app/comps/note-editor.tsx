@@ -9,10 +9,10 @@ import { floatingToolbarClassName } from '@/app/comps/floating-toolbar'
 import { Label } from '@/app/comps/ui/label'
 import { Textarea } from '@/app/comps/ui/textarea'
 import { StatusButton } from '@/app/comps/ui/status-button'
-import { editNote } from '@/app/utils/actions'
+import { editNote, loadNote } from '@/app/utils/actions'
 import { cn } from '@/app/utils/misc'
 import { NoteEditorSchema } from '@/app/utils/schemas'
-import type { ImageFieldset, Note } from '@/app/utils/schemas'
+import type { ImageFieldset } from '@/app/utils/schemas'
 
 import {
 	conform,
@@ -23,10 +23,11 @@ import {
 	type FieldConfig,
 } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
-
 import { ErrorList } from './error-list'
 
-export default function NoteEditor({ note }: { note?: Note }) {
+type Props = { note?: Awaited<ReturnType<typeof loadNote>>['note'] }
+
+export default function NoteEditor({ note }: Props) {
 	const [_state, dispatch] = useFormState(editNote, null)
 
 	const [form, fields] = useForm({

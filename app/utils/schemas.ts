@@ -39,16 +39,6 @@ export const NoteEditorSchema = z.object({
 
 export type ImageFieldset = z.infer<typeof ImageFieldsetSchema>
 
-export type Note = {
-	id: string
-	title: string
-	content: string
-	images: Array<{
-		id: string
-		altText: string | null
-	}>
-}
-
 export const UsernameSchema = z
 	.string({ required_error: 'Username is required' })
 	.min(3, { message: 'Username is too short' })
