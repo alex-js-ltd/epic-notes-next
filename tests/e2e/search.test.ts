@@ -5,7 +5,7 @@ import { prisma } from '../../app/utils/db'
 test('Search from home page', async ({ page }) => {
 	const userData = createUser()
 	const newUser = await prisma.user.create({
-		select: { name: true, username: true },
+		select: { id: true, name: true, username: true },
 		data: userData,
 	})
 	console.log(`test user ${newUser.username} added`)
@@ -26,6 +26,6 @@ test('Search from home page', async ({ page }) => {
 	await page.getByRole('button', { name: /search/i }).click()
 	await expect(userList.getByRole('listitem')).not.toBeVisible()
 	await expect(page.getByText(/no users found/i)).toBeVisible()
-	const user = await prisma.user.delete({ where: { email: userData.email } })
-	console.log(`test user ${user.username} removed`)
+	await prisma.user.delete({ where: { id: newUser.id } })
+	console.log(`test user ${newUser.username} removed`)
 })
