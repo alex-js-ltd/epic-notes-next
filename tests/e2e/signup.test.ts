@@ -19,4 +19,5 @@ test('Sign up user', async ({ page }) => {
 	await page.getByLabel('code').fill(VERIFICATION_CODE)
 	await page.getByRole('button', { name: /submit/i }).click()
 	await page.goto(`/auth/onboarding`)
+	await expect(page.getByText(`Please enter your details.`)).toBeVisible()
 })
