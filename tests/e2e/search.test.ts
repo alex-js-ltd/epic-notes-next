@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test'
 
 test('Search from home page', async ({ page }) => {
-	await page.goto('https://epic-notes-gamma.vercel.app/')
+	await page.goto('/')
 
 	await page.getByRole('searchbox', { name: /search/i }).fill('alex')
 	await page.getByRole('button', { name: /search/i }).click()
 
-	await page.waitForURL(`https://epic-notes-gamma.vercel.app/users?search=alex`)
+	await page.waitForURL(`/users?search=alex`, { timeout: 5000 })
 	await expect(page.getByText('Epic Notes Users')).toBeVisible()
 	const userList = page.getByRole('main').getByRole('list')
 	await expect(userList.getByRole('listitem')).toHaveCount(1)
