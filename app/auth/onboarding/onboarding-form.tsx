@@ -7,8 +7,12 @@ import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { OnboardingFormSchema } from '@/app/utils/schemas'
 import { onBoardUser } from '@/app/utils/actions'
+import { useUser } from '@clerk/nextjs'
 
-export default function OnboaringForm({ userId }: { userId: string }) {
+export default function OnboaringForm() {
+	const { user } = useUser()
+
+	const userId = user?.id
 	const [form, fields] = useForm({
 		id: 'onboarding-form',
 		constraint: getFieldsetConstraint(OnboardingFormSchema),
