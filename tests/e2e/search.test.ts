@@ -8,7 +8,7 @@ test('Search from home page', async ({ page }) => {
 		select: { name: true, username: true },
 		data: userData,
 	})
-	console.log(`test user ${newUser.name} added`)
+	console.log(`test user ${newUser.username} added`)
 	await page.goto('/')
 
 	await page.getByRole('searchbox', { name: /search/i }).fill(userData.username)
@@ -27,5 +27,5 @@ test('Search from home page', async ({ page }) => {
 	await expect(userList.getByRole('listitem')).not.toBeVisible()
 	await expect(page.getByText(/no users found/i)).toBeVisible()
 	const user = await prisma.user.delete({ where: { email: userData.email } })
-	console.log(`test user ${user.name} removed`)
+	console.log(`test user ${user.username} removed`)
 })
