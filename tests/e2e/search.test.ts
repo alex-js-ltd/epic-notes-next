@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 test('Search from home page', async ({ page }) => {
 	await page.goto('/')
-
+	console.log('test')
 	await page.getByRole('searchbox', { name: /search/i }).fill('alex')
 	await page.getByRole('button', { name: /search/i }).click()
 
