@@ -30,7 +30,7 @@ export default function UsersRoute() {
 										className="flex h-36 w-44 flex-col items-center justify-center rounded-lg bg-muted px-5 py-3"
 									>
 										<img
-											alt={user.name ?? user.username}
+											alt={user.username}
 											src={getUserImgSrc(user.imageId)}
 											className="h-16 w-16 rounded-full"
 										/>
