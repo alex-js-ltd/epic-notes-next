@@ -4,7 +4,7 @@ import { createUser } from '../db-utils'
 const userData = createUser()
 
 const EMAIL = `${userData.name}+clerk_test@example.com`
-const VERIFICATION_CODE = '424242'
+const VERIFICATION_CODE = 424242
 
 test('Sign up user', async ({ page }) => {
 	await page.goto('/auth/signup')
@@ -16,7 +16,7 @@ test('Sign up user', async ({ page }) => {
 	await expect(
 		page.getByText(`We've sent you a code to verify your email address.`),
 	).toBeVisible()
-	await page.getByLabel('code').fill(VERIFICATION_CODE)
+	await page.getByLabel('code').fill(`${VERIFICATION_CODE}`)
 	await page.getByRole('button', { name: /submit/i }).click()
 	await page.goto(`/auth/onboarding`)
 	await expect(page.getByText(`Please enter your details.`)).toBeVisible()
