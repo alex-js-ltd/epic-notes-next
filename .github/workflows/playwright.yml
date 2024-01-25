@@ -4,6 +4,7 @@ on:
   deployment_status:
 jobs:
   run-e2es:
+    using: 'node20'
     if:
       github.event_name == 'deployment_status' &&
       github.event.deployment_status.state == 'success'
